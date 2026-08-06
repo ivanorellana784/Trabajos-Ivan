@@ -1,0 +1,1446 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Checklist de Problemáticas — Makigami</title>
+<style>
+:root{
+  --bg:#eef2f8; --panel:#ffffff; --panel2:#f6f9fd; --line:#dfe6f0;
+  --txt:#1c2637; --mut:#6c7c93;
+  --ok:#12a56f; --no:#e8544d; --sap:#2f78e0;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Segoe UI Variable","Segoe UI",system-ui,Arial,sans-serif;color:var(--txt);
+  background:
+    radial-gradient(900px 520px at 12% -8%,#dbe7fb 0,transparent 60%),
+    radial-gradient(800px 500px at 88% 0%,#dcf3ef 0,transparent 60%),
+    var(--bg);
+  background-attachment:fixed;
+  padding:26px 18px 40px;min-height:100vh;
+  perspective:1900px;perspective-origin:50% 20%}
+
+/* ===== TOPBAR 3D ===== */
+.topbar{max-width:1500px;margin:0 auto 26px;display:flex;flex-wrap:wrap;gap:14px;align-items:center;
+  justify-content:space-between;background:linear-gradient(135deg,#1d4ed8,#0f9d8f);
+  color:#fff;border-radius:20px;padding:18px 22px;
+  box-shadow:0 22px 44px -16px rgba(29,78,216,.45),0 3px 0 rgba(255,255,255,.35) inset;
+  transform:translateZ(24px)}
+.topbar h2{font-size:22px;font-weight:800;letter-spacing:.4px;color:#fff;
+  text-shadow:0 2px 10px rgba(0,0,0,.22)}
+.actions{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+.filter-wrap{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.18);
+  border:1px solid rgba(255,255,255,.35);border-radius:11px;padding:6px 12px;backdrop-filter:blur(6px)}
+.filter-wrap label{font-size:11px;color:rgba(255,255,255,.85);text-transform:uppercase;letter-spacing:.6px;font-weight:700}
+.filter-wrap select{background:transparent;color:#fff;border:none;outline:none;font-family:inherit;
+  font-size:12.5px;font-weight:700;cursor:pointer}
+.filter-wrap select option{background:#fff;color:var(--txt)}
+button{font-family:inherit;font-size:12.5px;font-weight:700;border:1px solid rgba(255,255,255,.35);
+  border-radius:11px;padding:9px 15px;cursor:pointer;color:#fff;background:rgba(255,255,255,.16);
+  transition:transform .16s,box-shadow .16s,filter .16s;
+  box-shadow:0 6px 14px -6px rgba(0,0,0,.45),0 1px 0 rgba(255,255,255,.4) inset}
+button:hover{transform:translateY(-2px);filter:brightness(1.08);box-shadow:0 12px 22px -8px rgba(0,0,0,.5)}
+button:active{transform:translateY(0)}
+.btn-add{background:linear-gradient(160deg,#3b82f6,#1d4ed8);border-color:transparent}
+.btn-allno{background:linear-gradient(160deg,#f0625b,#c0332d);border-color:transparent}
+.btn-dl{background:linear-gradient(160deg,#14b8a6,#0d7c72);border-color:transparent}
+.btn-json{background:linear-gradient(160deg,#7c8ba1,#4c5a6e);border-color:transparent}
+.btn-load{background:linear-gradient(160deg,#e8a53a,#b7761a);border-color:transparent}
+
+/* ===== BOARD / COLUMNAS 3D ===== */
+.board{max-width:1500px;margin:0 auto;display:flex;gap:26px;overflow-x:auto;padding:14px 6px 26px;
+  align-items:flex-start;transform-style:preserve-3d}
+.board::-webkit-scrollbar{height:12px}
+.board::-webkit-scrollbar-track{background:#e3eaf4;border-radius:9px}
+.board::-webkit-scrollbar-thumb{background:linear-gradient(90deg,#b9c6d9,#93a5bd);border-radius:9px}
+.col{flex:0 0 720px;border-radius:22px;overflow:hidden;display:flex;flex-direction:column;
+  background:linear-gradient(180deg,#ffffff,#f4f8fd);
+  border:1px solid color-mix(in srgb,var(--c) 26%,var(--line));
+  box-shadow:
+    0 34px 60px -26px color-mix(in srgb,var(--c) 45%,rgba(20,35,60,.45)),
+    0 10px 20px -12px rgba(20,35,60,.22),
+    0 1px 0 #fff inset;
+  transform:rotateX(3deg) rotateY(-3deg) translateZ(0);
+  transform-style:preserve-3d;
+  transition:transform .45s cubic-bezier(.2,.8,.2,1),box-shadow .45s}
+.col:hover{transform:rotateX(0deg) rotateY(0deg) translateZ(38px) translateY(-6px);
+  box-shadow:0 46px 78px -26px color-mix(in srgb,var(--c) 50%,rgba(20,35,60,.5)),0 1px 0 #fff inset}
+
+.col-head{padding:18px 20px;position:relative;
+  border-bottom:1px solid color-mix(in srgb,var(--c) 24%,var(--line));
+  background:linear-gradient(150deg,color-mix(in srgb,var(--c) 90%,#ffffff),color-mix(in srgb,var(--c) 58%,#ffffff));
+  box-shadow:0 10px 22px -14px color-mix(in srgb,var(--c) 70%,transparent);
+  transform:translateZ(16px)}
+.col-head::before{content:"";position:absolute;left:0;top:0;bottom:0;width:6px;
+  background:linear-gradient(180deg,rgba(255,255,255,.9),color-mix(in srgb,var(--c) 80%,#000))}
+.col-head .t{display:flex;align-items:center;gap:9px}
+.col-head h1{font-size:17px;text-transform:uppercase;letter-spacing:.9px;border:none;outline:none;
+  background:transparent;color:#10202f;flex:1;font-weight:900;text-shadow:0 1px 0 rgba(255,255,255,.55)}
+.col-head h1:focus{box-shadow:inset 0 -2px 0 #10202f}
+.dot{width:12px;height:12px;border-radius:50%;background:#fff;
+  box-shadow:0 0 0 3px rgba(255,255,255,.45),0 2px 6px rgba(0,0,0,.28)}
+.col-head .meta{margin-top:12px;font-size:11.5px;color:#12303f;font-weight:700;display:flex;gap:12px;
+  flex-wrap:wrap;align-items:center}
+.col-head .del,.col-head .sapt{position:absolute;top:16px;background:rgba(255,255,255,.85);
+  border:1px solid rgba(255,255,255,.9);color:#26384c;border-radius:9px;cursor:pointer;
+  box-shadow:0 5px 12px -5px rgba(0,0,0,.35)}
+.col-head .del{right:16px;width:28px;height:28px;font-size:14px;padding:0}
+.col-head .del:hover{color:#fff;background:var(--no)}
+.col-head .sapt{right:52px;height:28px;font-size:10.5px;font-weight:800;padding:0 10px;letter-spacing:.6px}
+.col-head .sapt.on{background:var(--sap);color:#fff;border-color:var(--sap)}
+.chart-wrap{display:flex;align-items:center;gap:16px;margin-top:14px}
+.donut{flex:0 0 96px;filter:drop-shadow(0 8px 14px rgba(12,30,50,.28))}
+.donut text.big{font-size:20px;font-weight:900;fill:#12222f}
+.donut text.sub{display:none}
+.legend{display:flex;flex-direction:column;gap:6px;font-size:11.5px;color:#1d3446;font-weight:600}
+.legend .lg{display:flex;align-items:center;gap:8px}
+.legend .sw{width:12px;height:12px;border-radius:4px;flex:0 0 auto;box-shadow:0 2px 5px rgba(0,0,0,.28)}
+.legend b{color:#0f1f2c;font-weight:900}
+.bulk-no{margin-left:auto;background:rgba(255,255,255,.9);border:1px solid #f0b8b5;color:#c0332d;
+  border-radius:9px;padding:5px 11px;font-size:10.5px;font-weight:800;cursor:pointer}
+.bulk-no:hover{background:var(--no);color:#fff;border-color:var(--no)}
+
+/* ===== ITEMS (tarjetas con relieve) ===== */
+.col-body{padding:14px 14px 10px;display:flex;flex-direction:column;gap:12px;transform-style:preserve-3d}
+.item{background:linear-gradient(180deg,#ffffff,#f7fafd);
+  border:1px solid var(--line);border-left:5px solid color-mix(in srgb,var(--c) 60%,#fff);
+  border-radius:14px;padding:13px 14px;
+  box-shadow:0 10px 20px -12px rgba(23,42,66,.28),0 1px 0 #fff inset;
+  transition:transform .2s,box-shadow .2s,border-color .2s}
+.item:hover{transform:translateZ(14px) translateY(-3px);
+  box-shadow:0 20px 32px -14px rgba(23,42,66,.34);border-color:color-mix(in srgb,var(--c) 45%,var(--line))}
+.item.done{background:linear-gradient(180deg,#f1fbf6,#e9f7f1);border-left-color:var(--ok);opacity:.85}
+.item-top{display:flex;align-items:flex-start;gap:11px}
+.item input.chk{display:none}
+.box{flex:0 0 20px;height:20px;margin-top:1px;border:2px solid #b8c5d6;border-radius:6px;position:relative;
+  cursor:pointer;background:#fff;transition:.15s;box-shadow:0 2px 5px rgba(23,42,66,.14) inset}
+.box:hover{border-color:var(--ok)}
+.chk:checked+.box{border-color:var(--ok);background:linear-gradient(160deg,#22c188,var(--ok));
+  box-shadow:0 6px 12px -5px rgba(18,165,111,.65)}
+.chk:checked+.box::after{content:"";position:absolute;left:6px;top:2px;width:5px;height:10px;
+  border:solid #fff;border-width:0 2.5px 2.5px 0;transform:rotate(45deg)}
+.txt{flex:1;outline:none;font-size:13.5px;line-height:1.42;color:var(--txt);font-weight:700}
+.item.done .txt{text-decoration:line-through;color:var(--mut)}
+.desc{margin:10px 0 0 31px;display:flex;flex-direction:column;gap:8px}
+.desc-row{display:flex;gap:9px;align-items:flex-start}
+.desc-k{flex:0 0 70px;font-size:9.5px;font-weight:900;letter-spacing:.6px;text-transform:uppercase;
+  padding:4px 7px;border-radius:7px;text-align:center;margin-top:1px;
+  box-shadow:0 4px 10px -5px rgba(23,42,66,.4)}
+.desc-k-prob{background:linear-gradient(160deg,#fde3e1,#f9cdca);color:#a82f29;border:1px solid #f3bab6}
+.desc-k-sol{background:linear-gradient(160deg,#dcf6ec,#c6efdf);color:#0c7a53;border:1px solid #a9e6cd}
+.def{flex:1;font-size:12px;line-height:1.5;color:#4a5a6e;outline:none;border-radius:8px;padding:5px 8px;
+  border:1px solid transparent;transition:.15s}
+.def:hover{border-color:var(--line);background:#fbfdff}
+.def:focus{background:#fff;border-color:color-mix(in srgb,var(--c) 60%,var(--line));
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--c) 18%,transparent)}
+.def:empty::before{content:attr(data-ph);color:#9aa8ba;font-style:italic}
+.txt:focus{background:#fff;border-radius:6px;box-shadow:0 0 0 2px color-mix(in srgb,var(--c) 45%,transparent)}
+.rm{opacity:0;color:var(--no);font-weight:900;cursor:pointer;padding:0 3px;font-size:14px}
+.item:hover .rm{opacity:.75}
+.opts{display:flex;flex-wrap:wrap;gap:9px;margin-top:11px;padding-top:11px;border-top:1px dashed #dbe3ee}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff;
+  box-shadow:0 5px 12px -8px rgba(23,42,66,.4)}
+.seg .lbl{font-size:10px;color:var(--mut);align-self:center;padding:0 9px;text-transform:uppercase;
+  letter-spacing:.5px;font-weight:800}
+.seg button{border:none;border-radius:0;background:#fff;color:var(--mut);padding:7px 14px;font-size:11.5px;
+  box-shadow:none}
+.seg button:hover{transform:none;background:#f2f6fb;box-shadow:none}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button.on-yes{background:linear-gradient(160deg,#22c188,var(--ok));color:#fff}
+.seg button.on-no{background:linear-gradient(160deg,#f0625b,#cf3c36);color:#fff}
+.chip-sap{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:10px;
+  padding:7px 13px;font-size:11.5px;color:var(--mut);cursor:pointer;user-select:none;background:#fff;
+  font-weight:700;box-shadow:0 5px 12px -8px rgba(23,42,66,.4);transition:.16s}
+.chip-sap:hover{border-color:var(--sap);color:var(--sap)}
+.chip-sap.on{background:linear-gradient(160deg,#4f95ec,var(--sap));color:#fff;border-color:var(--sap);
+  box-shadow:0 8px 16px -8px rgba(47,120,224,.7)}
+.add-item{margin:6px 2px 10px;background:#fff;border:1.5px dashed #bcc9da;color:var(--mut);
+  width:calc(100% - 4px);padding:11px;border-radius:12px;font-size:12.5px;box-shadow:none}
+.add-item:hover{border-color:color-mix(in srgb,var(--c) 60%,var(--line));color:#10202f;background:#f7fbff;
+  transform:translateY(-1px)}
+
+@media print{
+  body{background:#fff;padding:10px;perspective:none}
+  .board{display:block}
+  .col{flex:none;width:100%;margin-bottom:14px;transform:none!important;box-shadow:none;border:1px solid #bbb;break-inside:avoid}
+  .item{box-shadow:none;transform:none!important}
+  .topbar,.btn-add,.btn-allno,.btn-dl,.btn-json,.btn-load,.del,.sapt,.rm,.add-item,.bulk-no{display:none!important}
+}
+/* ============ REFINAMIENTO VISUAL v2 (sobrescribe lo anterior) ============ */
+body{
+  background:
+    linear-gradient(rgba(255,255,255,0.62), rgba(255,255,255,0.62)),
+    url('/__l5e/assets-v1/1b418fdc-f0f8-467a-8f70-0a281a26c011/makigami-bg-aerial-3.jpg')
+    center / cover no-repeat fixed;
+  padding:22px 22px 56px; perspective:none;
+}
+.topbar{max-width:1400px;margin:0 auto 22px;padding:16px 20px;border-radius:16px;
+  background:linear-gradient(120deg,#16325c,#1f6f8b);transform:none;
+  box-shadow:0 14px 30px -18px rgba(16,38,72,.55)}
+.topbar h2{font-size:19px;font-weight:700;letter-spacing:.2px;text-shadow:none}
+button{font-size:12px;font-weight:600;border-radius:9px;padding:8px 13px;box-shadow:none;
+  border:1px solid rgba(255,255,255,.28)}
+button:hover{transform:none;filter:brightness(1.06);box-shadow:0 6px 14px -8px rgba(0,0,0,.4)}
+.btn-add,.btn-allno,.btn-dl,.btn-json,.btn-load{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.3)}
+.btn-allno:hover{background:#d8524b}
+.btn-dl:hover{background:#0f9484}
+.btn-add:hover{background:#2f6fd0}
+.btn-load:hover{background:#c98a20}
+
+/* Tablero: una sola fila, las áreas nuevas se agregan hacia el lado */
+.board{max-width:none;display:flex;flex-wrap:nowrap;align-items:flex-start;
+  gap:22px;overflow-x:auto;overflow-y:visible;padding:0 4px 22px;transform-style:flat;
+  scroll-snap-type:x proximity}
+.col{flex:0 0 430px;width:430px;scroll-snap-align:start;border-radius:16px;transform:none;background:#fff;
+  border:1px solid var(--line);
+  box-shadow:0 10px 26px -20px rgba(20,35,60,.5),0 1px 3px rgba(20,35,60,.06)}
+.col:hover{transform:none;box-shadow:0 16px 34px -22px rgba(20,35,60,.55)}
+
+
+/* Encabezado sobrio: blanco con acento de color */
+.col-head{transform:none;padding:16px 18px;background:#fff;
+  border-bottom:1px solid var(--line);box-shadow:none;
+  border-top:4px solid var(--c);border-radius:16px 16px 0 0}
+.col-head::before{display:none}
+.col-head h1{font-size:14.5px;letter-spacing:1.1px;font-weight:800;color:#1c2637;text-shadow:none}
+.dot{width:9px;height:9px;background:var(--c);box-shadow:none}
+.col-head .meta{margin-top:8px;font-size:11px;color:var(--mut);font-weight:600}
+.col-head .del,.col-head .sapt{background:#f4f7fb;border:1px solid var(--line);box-shadow:none;color:#5c6b80}
+.chart-wrap{margin-top:12px;gap:18px}
+.donut{flex:0 0 78px;filter:none}
+.donut text.big{font-size:19px;font-weight:800;fill:#1c2637}
+.legend{gap:5px;font-size:11.5px;color:#48586d}
+.legend .sw{box-shadow:none;border-radius:3px;width:9px;height:9px}
+.legend b{color:#1c2637}
+.bulk-no{background:#fff;box-shadow:none}
+
+/* Items compactos y legibles */
+.col-body{padding:12px 14px 16px;gap:8px}
+.item{border-radius:11px;padding:11px 13px;background:#fff;
+  border:1px solid var(--line);border-left:3px solid color-mix(in srgb,var(--c) 55%,#fff);
+  box-shadow:none}
+.item:hover{transform:none;box-shadow:0 6px 16px -12px rgba(23,42,66,.45);
+  border-color:color-mix(in srgb,var(--c) 40%,var(--line))}
+.item.done{background:#f4fbf7;opacity:1;border-left-color:var(--ok)}
+.txt{font-size:13px;font-weight:600}
+.desc{margin:8px 0 0 31px;gap:6px}
+.desc-k{background:#f1f4f9;border:1px solid var(--line);color:#5c6b80;box-shadow:none;
+  font-size:9px;letter-spacing:.5px;flex:0 0 62px}
+.desc-k-prob{background:#fdf0ef;border-color:#f6d6d3;color:#a8433c}
+.desc-k-sol{background:#eef9f4;border-color:#cfeade;color:#0d7a53}
+.def{font-size:12px;color:#4c5b6e}
+.opts{margin-top:9px;padding-top:9px;gap:8px;border-top:1px solid #eef2f7}
+.seg{box-shadow:none;border-radius:8px}
+@media (max-width:860px){
+  body{padding:16px 14px 40px}
+  .col{flex:0 0 88vw;width:88vw}
+}
+
+</style></head><body>
+
+
+<div class="topbar">
+  <h2>◆ Checklist de Problemáticas — Makigami</h2>
+  <div class="actions">
+    <span class="filter-wrap"><label>Filtrar:</label><select id="areaFilter" onchange="setFilter(this.value)"><option value="__all__">Todas las áreas</option><option value="0">RECLUTAMIENTO</option><option value="1">ADQUISICIONES</option><option value="2">NUEVA ÁREA</option><option value="3">NUEVA ÁREA</option></select></span>
+    <button class="btn-add" onclick="addArea()">+ Agregar área</button>
+    <button class="btn-allno" onclick="allNoGlobal()">Solución → todo No</button>
+    <button class="btn-dl" onclick="descargar()">⬇ HTML</button>
+    <button class="btn-json" onclick="descargarJSON()">⬇ JSON</button>
+    <button class="btn-load" onclick="document.getElementById('fileJSON').click()">⬆ Cargar JSON</button>
+    <input type="file" id="fileJSON" accept=".json,application/json" style="display:none" onchange="cargarJSON(event)">
+  </div>
+</div>
+
+<div class="board" id="board"><section class="col" style="--c: #22D3C5;">
+      <div class="col-head">
+        <div class="t"><span class="dot"></span><h1 contenteditable="" spellcheck="false" oninput="rename(1,this.textContent)">ADQUISICIONES</h1></div>
+        <button class="sapt on" onclick="toggleAreaSap(1)" title="Mostrar/ocultar opción SAP en esta área">SAP</button>
+        <button class="del" onclick="rmArea(1)" title="Eliminar área">✕</button>
+        <div class="chart-wrap">
+          <svg class="donut" viewBox="0 0 92 92" width="92" height="92"><circle cx="46" cy="46" r="34" fill="none" stroke="var(--ok)" stroke-width="11" stroke-dasharray="34.45617749098483 179.17212295312112" stroke-dashoffset="0" transform="rotate(-90 46 46)"></circle><circle cx="46" cy="46" r="34" fill="none" stroke="var(--no)" stroke-width="11" stroke-dasharray="179.17212295312112 34.45617749098483" stroke-dashoffset="-34.45617749098483" transform="rotate(-90 46 46)"></circle><circle cx="46" cy="46" r="25" fill="#ffffff"></circle><text class="big" x="46" y="44" text-anchor="middle" dominant-baseline="middle">16%</text><text class="sub" x="46" y="58" text-anchor="middle">CON SOLUCIÓN</text></svg>
+          <div class="legend">
+            <div class="lg"><span class="sw" style="background:var(--ok)"></span><b>5</b> con solución</div>
+            <div class="lg"><span class="sw" style="background:var(--no)"></span><b>26</b> sin solución</div>
+            <div class="lg"><span class="sw" style="background:#3a424d"></span><b>0</b> sin definir</div>
+            <div class="lg"><span class="sw" style="background:var(--c)"></span><b>0</b> marcados ✓</div>
+          </div>
+        </div>
+        <div class="meta"><span>31 problemas</span><span>⊞ 3 SAP</span><button class="bulk-no" onclick="allNo(1)" title="Marcar todas las soluciones de esta área como No">Todas: No</button></div>
+      </div>
+      <div class="col-body"><div class="item ">
+        <div class="item-top">
+          <input type="checkbox" class="chk" id="c1_0" onchange="toggle(1,0,this.checked)">
+          <label class="box" for="c1_0"></label>
+          <span class="txt" contenteditable="" spellcheck="false" oninput="edit(1,0,this.textContent)">Tiempo de respuesta</span>
+          <span class="rm" onclick="rmItem(1,0)">✕</span>
+        </div>
+        <div class="desc">
+          <div class="desc-row"><span class="desc-k desc-k-prob">Problema</span><div class="def" contenteditable="" spellcheck="false" data-ph="Describe el problema…" oninput="editDef(1,0,this.textContent)">Proveedor / tiempo externo de respuesta de proveedores. Tiempo asociado a la respuesta de cada solicitud por parte de los proveedores.</div></div>
+          <div class="desc-row"><span class="desc-k desc-k-sol">Solución</span><div class="def" contenteditable="" spellcheck="false" data-ph="Describe la solución…" oninput="editSol(1,0,this.textContent)"></div></div>
+        </div>
+        <div class="opts">
+          <span class="seg">
+            <span class="lbl">¿Resuelto?</span>
+            <button class="" onclick="setSol(1,0,'si')">Sí</button>
+            <button class="on-no" onclick="setSol(1,0,'no')">No</button>
+          </span>
+          <span class="chip-sap " onclick="toggleSap(1,0)">⊞ Se soluciona con SAP</span>
+        </div>
+      </div><div class="item ">
+        <div class="item-top">
+          <input type="checkbox" class="chk" id="c1_1" onchange="toggle(1,1,this.checked)">
+          <label class="box" for="c1_1"></label>
+          <span class="txt" contenteditable="" spellcheck="false" oninput="edit(1,1,this.textContent)">Deuda de pago</span>
+          <span class="rm" onclick="rmItem(1,1)">✕</span>
+        </div>
+        <div class="desc">
+          <div class="desc-row"><span class="desc-k desc-k-prob">Problema</span><div class="def" contenteditable="" spellcheck="false" data-ph="Describe el problema…" oninput="editDef(1,1,this.textContent)">Emilio (departamento de finanzas). Deuda de pago con proveedores.</div></div>
+          <div class="desc-row"><span class="desc-k desc-k-sol">Solución</span><div class="def" contenteditable="" spellcheck="false" data-ph="Describe la solución…" oninput="editSol(1,1,this.textContent)"></div></div>
+        </div>
+        <div class="opts">
+          <span class="seg">
+            <span class="lbl">¿Resuelto?</span>
+            <button class="on-yes" onclick="setSol(1,1,'si')">Sí</button>
+            <button class="" onclick="setSol(1,1,'no')">No</button>
+          </span>
+          <span class="chip-sap " onclick="toggleSap(1,1)">⊞ Se soluciona con SAP</span>
+        </div>
+      </div><div class="item ">
+        <div class="item-top">
+          <input type="checkbox" class="chk" id="c1_2" onchange="toggle(1,2,this.checked)">
+          <label class="box" for="c1_2"></label>
+          <span class="txt" contenteditable="" spellcheck="false" oninput="edit(1,2,this.textContent)">Tiempo de pago</span>
+          <span class="rm" onclick="rmItem(1,2)">✕</span>
+        </div>
+        <div class="desc">
+          <div class="desc-row"><span class="desc-k desc-k-prob">Problema</span><div class="def" contenteditable="" spellcheck="false" data-ph="Describe el problema…" oninput="editDef(1,2,this.textContent)">Emilio (departamento de finanzas). Tiempo de pago de facturas de proveedores.</div></div>
+          <div class="desc-row"><span class="desc-k desc-k-sol">Solución</span><div class="def" contenteditable="" spellcheck="false" data-ph="Describe la solución…" oninput="editSol(1,2,this.textContent)"></div></div>
+        </div>
+        <div class="opts">
+          <span class="seg">
+            <span class="lbl">¿Resuelto?</span>
+            <button class="on-yes" onclick="setSol(1,2,'si')">Sí</button>
+            <button class="" onclick="setSol(1,2,'no')">No</button>
+          </span>
+          <span class="chip-sap " onclick="toggleSap(1,2)">⊞ Se soluciona con SAP</span>
+        </div>
+      </div><div class="item ">
+        <div class="item-top">
+          <input type="checkbox" class="chk" id="c1_3" onchange="toggle(1,3,this.checked)">
+          <label class="box" for="c1_3"></label>
+          <span class="txt" contenteditable="" spellcheck="false" oninput="edit(1,3,this.textContent)">Presentación a proveedores</span>
+          <span class="rm" onclick="rmItem(1,3)">✕</span>
+        </div>
+        <div class="desc">
+          <div class="desc-row"><span class="desc-k desc-k-prob">Problema</span><div class="def" contenteditable="" spellcheck="false" data-ph="Describe el problema…" oninput="editDef(1,3,this.textContent)">Tiempo perdido en presentar la empresa a proveedores nuevos (buscar automatización).</div></div>
+          <div class="desc-row"><span class="desc-k desc-k-sol">Solución</span><div class="def" contenteditable="" spellcheck="false" data-ph="Describe la solución…" oninput="editSol(1,3,this.textContent)"></div></div>
+        </div>
+        <div class="opts">
+          <span class="seg">
+            <span class="lbl">¿Resuelto?</span>
+            <button class="" onclick="setSol(1,3,'si')">Sí</button>
+            <button class="on-no" onclick="setSol(1,3,'no')">No</button>
+          </span>
+          <span class="chip-sap " onclick="toggleSap(1,3)">⊞ Se soluciona con SAP</span>
+        </div>
+      </div><div class="item ">
+        <div class="item-top">
+          <input type="checkbox" class="chk" id="c1_4" onchange="toggle(1,4,this.checked)">
+          <label class="box" for="c1_4"></label>
+          <span class="txt" contenteditable="" spellcheck="false" oninput="edit(1,4,this.textContent)">Único creadoren SAP</span>
+          <span class="rm" onclick="rmItem(1,4)">✕</span>
+        </div>
+        <div class="desc">
+          <div class="desc-row"><span class="desc-k desc-k-prob">Problema</span><div class="def" contenteditable="" spellcheck="false" data-ph="Describe el problema…" oninput="editDef(1,4,this.textContent)">Daniel es el único creador de artículos en SAP (todos recurren a él para crear artículos).</div></div>
+          <div class="desc-row"><span class="desc-k desc-k-sol">Solución</span><div class="def" contenteditable="" spellcheck="false" data-ph="Describe la solución…" oninput="editSol(1,4,this.textContent)"></div></div>
+        </div>
+        <div class="opts">
+          <span class="seg">
+            <span class="lbl">¿Resuelto?</span>
+            <button class="" onclick="setSol(1,4,'si')">Sí</button>
+            <button class="on-no" onclick="setSol(1,4,'no')">No</button>
+          </span>
+          <span class="chip-sap " onclick="toggleSap(1,4)">⊞ Se soluciona con SAP</span>
+        </div>
+      </div><div class="item ">
+        <div class="item-top">
+          <input type="checkbox" class="chk" id="c1_5" onchange="toggle(1,5,this.checked)">
+          <label class="box" for="c1_5"></label>
+          <span class="txt" contenteditable="" spellcheck="false" oninput="edit(1,5,this.textContent)">Productos duplicados</span>
+          <span class="rm" onclick="rmItem(1,5)">✕</span>
+        </div>
+        <div class="desc">
+          <div class="desc-row"><span class="desc-k desc-k-prob">Problema</span><div class="def" contenteditable="" spellcheck="false" data-ph="Describe el problema…" oninput="editDef(1,5,this.textContent)">Cuando se cargaron los artículos en SAP por parte de Alan, muchos productos quedaron duplicados dentro de la plataforma y con nomenclatura equivocada, ya que se cargaron todos a la misma empresa.</div></div>
+          <div class="desc-row"><span class="desc-k desc-k-sol">Solución</span><div class="def" contenteditable="" spellcheck="false" data-ph="Describe la solución…" oninput="editSol(1,5,this.textContent)"></div></div>
+        </div>
+        <div class="opts">
+          <span class="seg">
+            <span class="lbl">¿Resuelto?</span>
+            <button class="" onclick="setSol(1,5,'si')">Sí</button>
+            <button class="on-no" onclick="setSol(1,5,'no')">No</button>
+          </span>
+          <span class="chip-sap " onclick="toggleSap(1,5)">⊞ Se soluciona con SAP</span>
+        </div>
+      </div><div class="item ">
+        <div class="item-top">
+          <input type="checkbox" class="chk" id="c1_6" onchange="toggle(1,6,this.checked)">
+          <label class="box" for="c1_6"></label>
+          <span class="txt" contenteditable="" spellcheck="false" oninput="edit(1,6,this.textContent)">Interrupción de labores</span>
+          <span class="rm" onclick="rmItem(1,6)">✕</span>
+        </div>
+        <div class="desc">
+          <div class="desc-row"><span class="desc-k desc-k-prob">Problema</span><div class="def" contenteditable="" spellcheck="false" data-ph="Describe el problema…" oninput="editDef(1,6,this.textContent)">Interrupción de labores.</div></div>
+          <div class="desc-row"><span class="desc-k desc-k-sol">Solución</span><div class="def" contenteditable="" spellcheck="false" data-ph="Describe la solución…" oninput="editSol(1,6,this.textContent)"></div></div>
+        </div>
+        <div class="opts">
+          <span class="seg">
+            <span class="lbl">¿Resuelto?</span>
+            <button class="" onclick="setSol(1,6,'si')">Sí</button>
+            <button class="on-no" onclick="setSol(1,6,'no')">No</button>
+          </span>
+          <span class="chip-sap " onclick="toggleSap(1,6)">⊞ Se soluciona con SAP</span>
+        </div>
+      </div><div class="item ">
+        <div class="item-top">
+          <input type="checkbox" class="chk" id="c1_7" onchange="toggle(1,7,this.checked)">
+          <label class="box" for="c1_7"></label>
+          <span class="txt" contenteditable="" spellcheck="false" oninput="edit(1,7,this.textContent)">Solicitud incompleta</span>
+          <span class="rm" onclick="rmItem(1,7)">✕</span>
+        </div>
+        <div class="desc">
+          <div class="desc-row"><span class="desc-k desc-k-prob">Problema</span><div class="def" contenteditable="" spellcheck="false" data-ph="Describe el problema…" oninput="editDef(1,7,this.textContent)">Solicitante. Las solicitudes de compra vienen incompletas con muchos datos pendientes; se necesita formulario.</div></div>
+          <div class="desc-row"><span class="desc-k desc-k-sol">Solución</span><div class="def" contenteditable="" spellcheck="false" data-ph="Describe la solución…" oninput="editSol(1,7,this.textContent)"></div></div>
+        </div>
+        <div class="opts">
+          <span class="seg">
+            <span class="lbl">¿Resuelto?</span>
+            <button class="" onclick="setSol(1,7,'si')">Sí</button>
+            <button class="on-no" onclick="setSol(1,7,'no')">No</button>
+          </span>
+          <span class="chip-sap " onclick="toggleSap(1,7)">⊞ Se soluciona con SAP</span>
+        </div>
+      </div><div class="item ">
+        <div class="item-top">
+          <input type="checkbox" class="chk" id="c1_8" onchange="toggle(1,8,this.checked)">
+          <label class="box" for="c1_8"></label>
+          <span class="txt" contenteditable="" spellcheck="false" oninput="edit(1,8,this.textContent)">Tiempo de revisión</span>
+          <span class="rm" onclick="rmItem(1,8)">✕</span>
+        </div>
+        <div class="desc">
+          <div class="desc-row"><span class="desc-k desc-k-prob">Problema</span><div class="def" contenteditable="" spellcheck="false" data-ph="Describe el problema…" oninput="editDef(1,8,this.textContent)">Tiempo de revisión.</div></div>
+          <div class="desc-row"><span class="desc-k desc-k-sol">Solución</span><div class="def" contenteditable="" spellcheck="false" data-ph="Describe la solución…" oninput="editSol(1,8,this.textContent)"></div></div>
+        </div>
+        <div class="opts">
+          <span class="seg">
+            <span class="lbl">¿Resuelto?</span>
+            <button class="" onclick="setSol(1,8,'si')">Sí</button>
+            <button class="on-no" onclick="setSol(1,8,'no')">No</button>
+          </span>
+          <span class="chip-sap " onclick="toggleSap(1,8)">⊞ Se soluciona con SAP</span>
+        </div>
+      </div><div class="item ">
+        <div class="item-top">
+          <input type="checkbox" class="chk" id="c1_9" onchange="toggle(1,9,this.checked)">
+          <label class="box" for="c1_9"></label>
+          <span class="txt" contenteditable="" spellcheck="false" oninput="edit(1,9,this.textContent)">Información incompleta</span>
+          <span class="rm" onclick="rmItem(1,9)">✕</span>
+        </div>
+        <div class="desc">
+          <div class="desc-row"><span class="desc-k desc-k-prob">Problema</span><div class="def" contenteditable="" spellcheck="false" data-ph="Describe el problema…" oninput="editDef(1,9,this.textContent)">Krisna. Información incompleta del status de facturas por empresa, sin detalle; se necesita formulario.</div></div>
+          <div class="desc-row"><span class="desc-k desc-k-sol">Solución</span><div class="def" contenteditable="" spellcheck="false" data-ph="Describe la solución…" oninput="editSol(1,9,this.textContent)"></div></div>
+        </div>
+        <div class="opts">
+          <span class="seg">
+            <span class="lbl">¿Resuelto?</span>
+            <button class="" onclick="setSol(1,9,'si')">Sí</button>
+            <button class="on-no" onclick="setSol(1,9,'no')">No</button>
+          </span>
+          <span class="chip-sap " onclick="toggleSap(1,9)">⊞ Se soluciona con SAP</span>
+        </div>
+      </div><div class="item ">
+        <div class="item-top">
+          <input type="checkbox" class="chk" id="c1_10" onchange="toggle(1,10,this.checked)">
+          <label class="box" for="c1_10"></label>
+          <span class="txt" contenteditable="" spellcheck="false" oninput="edit(1,10,this.textContent)">Gerente no se encuentra en su puesto de trabajo</span>
+          <span class="rm" onclick="rmItem(1,10)">✕</span>
+        </div>
+        <div class="desc">
+          <div class="desc-row"><span class="desc-k desc-k-prob">Problema</span><div class="def" contenteditable="" spellcheck="false" data-ph="Describe el problema…" oninput="editDef(1,10,this.textContent)">Gerente no se encuentra en su puesto de trabajo.</div></div>
+          <div class="desc-row"><span class="desc-k desc-k-sol">Solución</span><div class="def" contenteditable="" spellcheck="false" data-ph="Describe la solución…" oninput="editSol(1,10,this.textContent)"></div></div>
+        </div>
+        <div class="opts">
+          <span class="seg">
+            <span class="lbl">¿Resuelto?</span>
+            <button class="on-yes" onclick="setSol(1,10,'si')">Sí</button>
+            <button class="" onclick="setSol(1,10,'no')">No</button>
+          </span>
+          <span class="chip-sap on" onclick="toggleSap(1,10)">⊞ Se soluciona con SAP</span>
+        </div>
+      </div><div class="item ">
+        <div class="item-top">
+          <input type="checkbox" class="chk" id="c1_11" onchange="toggle(1,11,this.checked)">
+          <label class="box" for="c1_11"></label>
+          <span class="txt" contenteditable="" spellcheck="false" oninput="edit(1,11,this.textContent)">Gerente no se encuentra en su oficina</span>
+          <span class="rm" onclick="rmItem(1,11)">✕</span>
+        </div>
+        <div class="desc">
+          <div class="desc-row"><span class="desc-k desc-k-prob">Problema</span><div class="def" contenteditable="" spellcheck="false" data-ph="Describe el problema…" oninput="editDef(1,11,this.textContent)">Dificultad para conseguir firmas para documentación.</div></div>
+          <div class="desc-row"><span class="desc-k desc-k-sol">Solución</span><div class="def" contenteditable="" spellcheck="false" data-ph="Describe la solución…" oninput="editSol(1,11,this.textContent)"></div></div>
+        </div>
+        <div class="opts">
+          <span class="seg">
+            <span class="lbl">¿Resuelto?</span>
+            <button class="on-yes" onclick="setSol(1,11,'si')">Sí</button>
+            <button class="" onclick="setSol(1,11,'no')">No</button>
+          </span>
+          <span class="chip-sap on" onclick="toggleSap(1,11)">⊞ Se soluciona con SAP</span>
+        </div>
+      </div><div class="item ">
+        <div class="item-top">
+          <input type="checkbox" class="chk" id="c1_12" onchange="toggle(1,12,this.checked)">
+          <label class="box" for="c1_12"></label>
+          <span class="txt" contenteditable="" spellcheck="false" oninput="edit(1,12,this.textContent)">Correo innecesario</span>
+          <span class="rm" onclick="rmItem(1,12)">✕</span>
+        </div>
+        <div class="desc">
+          <div class="desc-row"><span class="desc-k desc-k-prob">Problema</span><div class="def" contenteditable="" spellcheck="false" data-ph="Describe el problema…" oninput="editDef(1,12,this.textContent)">Cultura de copiar a mucha gente en los correos provoca pérdidas de tiempo.</div></div>
+          <div class="desc-row"><span class="desc-k desc-k-sol">Solución</span><div class="def" contenteditable="" spellcheck="false" data-ph="Describe la solución…" oninput="editSol(1,12,this.textContent)"></div></div>
+        </div>
+        <div class="opts">
+          <span class="seg">
+            <span class="lbl">¿Resuelto?</span>
+            <button class="" onclick="setSol(1,12,'si')">Sí</button>
+            <button class="on-no" onclick="setSol(1,12,'no')">No</button>
+          </span>
+          <span class="chip-sap " onclick="toggleSap(1,12)">⊞ Se soluciona con SAP</span>
+        </div>
+      </div><div class="item ">
+        <div class="item-top">
+          <input type="checkbox" class="chk" id="c1_13" onchange="toggle(1,13,this.checked)">
+          <label class="box" for="c1_13"></label>
+          <span class="txt" contenteditable="" spellcheck="false" oninput="edit(1,13,this.textContent)">No notificación de rechazo O/C</span>
+          <span class="rm" onclick="rmItem(1,13)">✕</span>
+        </div>
+        <div class="desc">
+          <div class="desc-row"><span class="desc-k desc-k-prob">Problema</span><div class="def" contenteditable="" spellcheck="false" data-ph="Describe el problema…" oninput="editDef(1,13,this.textContent)">No notificación de rechazo de pago de órdenes de compra al departamento de adquisiciones.</div></div>
+          <div class="desc-row"><span class="desc-k desc-k-sol">Solución</span><div class="def" contenteditable="" spellcheck="false" data-ph="Describe la solución…" oninput="editSol(1,13,this.textContent)"></div></div>
+        </div>
+        <div class="opts">
+          <span class="seg">
+            <span class="lbl">¿Resuelto?</span>
+            <button class="" onclick="setSol(1,13,'si')">Sí</button>
+            <button class="on-no" onclick="setSol(1,13,'no')">No</button>
+          </span>
+          <span class="chip-sap " onclick="toggleSap(1,13)">⊞ Se soluciona con SAP</span>
+        </div>
+      </div><div class="item ">
+        <div class="item-top">
+          <input type="checkbox" class="chk" id="c1_14" onchange="toggle(1,14,this.checked)">
+          <label class="box" for="c1_14"></label>
+          <span class="txt" contenteditable="" spellcheck="false" oninput="edit(1,14,this.textContent)">Falta de datos</span>
+          <span class="rm" onclick="rmItem(1,14)">✕</span>
+        </div>
+        <div class="desc">
+          <div class="desc-row"><span class="desc-k desc-k-prob">Problema</span><div class="def" contenteditable="" spellcheck="false" data-ph="Describe el problema…" oninput="editDef(1,14,this.textContent)">Proveedor / solicitante. Falta de datos.</div></div>
+          <div class="desc-row"><span class="desc-k desc-k-sol">Solución</span><div class="def" contenteditable="" spellcheck="false" data-ph="Describe la solución…" oninput="editSol(1,14,this.textContent)"></div></div>
+        </div>
+        <div class="opts">
+          <span class="seg">
+            <span class="lbl">¿Resuelto?</span>
+            <button class="on-yes" onclick="setSol(1,14,'si')">Sí</button>
+            <button class="" onclick="setSol(1,14,'no')">No</button>
+          </span>
+          <span class="chip-sap on" onclick="toggleSap(1,14)">⊞ Se soluciona con SAP</span>
+        </div>
+      </div><div class="item ">
+        <div class="item-top">
+          <input type="checkbox" class="chk" id="c1_15" onchange="toggle(1,15,this.checked)">
+          <label class="box" for="c1_15"></label>
+          <span class="txt" contenteditable="" spellcheck="false" oninput="edit(1,15,this.textContent)">T/P guías urgente</span>
+          <span class="rm" onclick="rmItem(1,15)">✕</span>
+        </div>
+        <div class="desc">
+          <div class="desc-row"><span class="desc-k desc-k-prob">Problema</span><div class="def" contenteditable="" spellcheck="false" data-ph="Describe el problema…" oninput="editDef(1,15,this.textContent)">A diario se acerca personal a solicitarle guías con urgencia, lo que lo saca de sus funciones habituales y genera pérdida de tiempo (prohibir estas prácticas).</div></div>
+          <div class="desc-row"><span class="desc-k desc-k-sol">Solución</span><div class="def" contenteditable="" spellcheck="false" data-ph="Describe la solución…" oninput="editSol(1,15,this.textContent)"></div></div>
+        </div>
+        <div class="opts">
+          <span class="seg">
+            <span class="lbl">¿Resuelto?</span>
+            <button class="" onclick="setSol(1,15,'si')">Sí</button>
+            <button class="on-no" onclick="setSol(1,15,'no')">No</button>
+          </span>
+          <span class="chip-sap " onclick="toggleSap(1,15)">⊞ Se soluciona con SAP</span>
+        </div>
+      </div><div class="item ">
+        <div class="item-top">
+          <input type="checkbox" class="chk" id="c1_16" onchange="toggle(1,16,this.checked)">
+          <label class="box" for="c1_16"></label>
+          <span class="txt" contenteditable="" spellcheck="false" oninput="edit(1,16,this.textContent)">Planificación de rutas</span>
+          <span class="rm" onclick="rmItem(1,16)">✕</span>
+        </div>
+        <div class="desc">
+          <div class="desc-row"><span class="desc-k desc-k-prob">Problema</span><div class="def" contenteditable="" spellcheck="false" data-ph="Describe el problema…" oninput="editDef(1,16,this.textContent)">La bodega no tiene rutas definidas para retiros y despachos.</div></div>
+          <div class="desc-row"><span class="desc-k desc-k-sol">Solución</span><div class="def" contenteditable="" spellcheck="false" data-ph="Describe la solución…" oninput="editSol(1,16,this.textContent)"></div></div>
+        </div>
+        <div class="opts">
+          <span class="seg">
+            <span class="lbl">¿Resuelto?</span>
+            <button class="" onclick="setSol(1,16,'si')">Sí</button>
+            <button class="on-no" onclick="setSol(1,16,'no')">No</button>
+          </span>
+          <span class="chip-sap " onclick="toggleSap(1,16)">⊞ Se soluciona con SAP</span>
+        </div>
+      </div><div class="item ">
+        <div class="item-top">
+          <input type="checkbox" class="chk" id="c1_17" onchange="toggle(1,17,this.checked)">
+          <label class="box" for="c1_17"></label>
+          <span class="txt" contenteditable="" spellcheck="false" oninput="edit(1,17,this.textContent)">Parámetros plataforma</span>
+          <span class="rm" onclick="rmItem(1,17)">✕</span>
+        </div>
+        <div class="desc">
+          <div class="desc-row"><span class="desc-k desc-k-prob">Problema</span><div class="def" contenteditable="" spellcheck="false" data-ph="Describe el problema…" oninput="editDef(1,17,this.textContent)">Plataforma. Cada vez que sale algo de bodega se debe realizar guía de despacho para evitar problemas con la carga ante una fiscalización / interrupción de labores (plataforma SII).</div></div>
+          <div class="desc-row"><span class="desc-k desc-k-sol">Solución</span><div class="def" contenteditable="" spellcheck="false" data-ph="Describe la solución…" oninput="editSol(1,17,this.textContent)"></div></div>
+        </div>
+        <div class="opts">
+          <span class="seg">
+            <span class="lbl">¿Resuelto?</span>
+            <button class="" onclick="setSol(1,17,'si')">Sí</button>
+            <button class="on-no" onclick="setSol(1,17,'no')">No</button>
+          </span>
+          <span class="chip-sap " onclick="toggleSap(1,17)">⊞ Se soluciona con SAP</span>
+        </div>
+      </div><div class="item ">
+        <div class="item-top">
+          <input type="checkbox" class="chk" id="c1_18" onchange="toggle(1,18,this.checked)">
+          <label class="box" for="c1_18"></label>
+          <span class="txt" contenteditable="" spellcheck="false" oninput="edit(1,18,this.textContent)">Bodega disponibilidad</span>
+          <span class="rm" onclick="rmItem(1,18)">✕</span>
+        </div>
+        <div class="desc">
+          <div class="desc-row"><span class="desc-k desc-k-prob">Problema</span><div class="def" contenteditable="" spellcheck="false" data-ph="Describe el problema…" oninput="editDef(1,18,this.textContent)">Bodega / sin supervisión / sin control / sin tareas diarias.</div></div>
+          <div class="desc-row"><span class="desc-k desc-k-sol">Solución</span><div class="def" contenteditable="" spellcheck="false" data-ph="Describe la solución…" oninput="editSol(1,18,this.textContent)"></div></div>
+        </div>
+        <div class="opts">
+          <span class="seg">
+            <span class="lbl">¿Resuelto?</span>
+            <button class="" onclick="setSol(1,18,'si')">Sí</button>
+            <button class="on-no" onclick="setSol(1,18,'no')">No</button>
+          </span>
+          <span class="chip-sap " onclick="toggleSap(1,18)">⊞ Se soluciona con SAP</span>
+        </div>
+      </div><div class="item ">
+        <div class="item-top">
+          <input type="checkbox" class="chk" id="c1_19" onchange="toggle(1,19,this.checked)">
+          <label class="box" for="c1_19"></label>
+          <span class="txt" contenteditable="" spellcheck="false" oninput="edit(1,19,this.textContent)">Disponibilidad proveedor</span>
+          <span class="rm" onclick="rmItem(1,19)">✕</span>
+        </div>
+        <div class="desc">
+          <div class="desc-row"><span class="desc-k desc-k-prob">Problema</span><div class="def" contenteditable="" spellcheck="false" data-ph="Describe el problema…" oninput="editDef(1,19,this.textContent)">Proveedores se niegan a vender productos por atrasos en los pagos.</div></div>
+          <div class="desc-row"><span class="desc-k desc-k-sol">Solución</span><div class="def" contenteditable="" spellcheck="false" data-ph="Describe la solución…" oninput="editSol(1,19,this.textContent)"></div></div>
+        </div>
+        <div class="opts">
+          <span class="seg">
+            <span class="lbl">¿Resuelto?</span>
+            <button class="" onclick="setSol(1,19,'si')">Sí</button>
+            <button class="on-no" onclick="setSol(1,19,'no')">No</button>
+          </span>
+          <span class="chip-sap " onclick="toggleSap(1,19)">⊞ Se soluciona con SAP</span>
+        </div>
+      </div><div class="item ">
+        <div class="item-top">
+          <input type="checkbox" class="chk" id="c1_20" onchange="toggle(1,20,this.checked)">
+          <label class="box" for="c1_20"></label>
+          <span class="txt" contenteditable="" spellcheck="false" oninput="edit(1,20,this.textContent)">Disponibilidad bodega</span>
+          <span class="rm" onclick="rmItem(1,20)">✕</span>
+        </div>
+        <div class="desc">
+          <div class="desc-row"><span class="desc-k desc-k-prob">Problema</span><div class="def" contenteditable="" spellcheck="false" data-ph="Describe el problema…" oninput="editDef(1,20,this.textContent)">Bodega / sin supervisión / sin control / sin tareas diarias.</div></div>
+          <div class="desc-row"><span class="desc-k desc-k-sol">Solución</span><div class="def" contenteditable="" spellcheck="false" data-ph="Describe la solución…" oninput="editSol(1,20,this.textContent)"></div></div>
+        </div>
+        <div class="opts">
+          <span class="seg">
+            <span class="lbl">¿Resuelto?</span>
+            <button class="" onclick="setSol(1,20,'si')">Sí</button>
+            <button class="on-no" onclick="setSol(1,20,'no')">No</button>
+          </span>
+          <span class="chip-sap " onclick="toggleSap(1,20)">⊞ Se soluciona con SAP</span>
+        </div>
+      </div><div class="item ">
+        <div class="item-top">
+          <input type="checkbox" class="chk" id="c1_21" onchange="toggle(1,21,this.checked)">
+          <label class="box" for="c1_21"></label>
+          <span class="txt" contenteditable="" spellcheck="false" oninput="edit(1,21,this.textContent)">Reunión no programada T/P</span>
+          <span class="rm" onclick="rmItem(1,21)">✕</span>
+        </div>
+        <div class="desc">
+          <div class="desc-row"><span class="desc-k desc-k-prob">Problema</span><div class="def" contenteditable="" spellcheck="false" data-ph="Describe el problema…" oninput="editDef(1,21,this.textContent)">Reuniones no programadas interrumpen el tiempo de trabajo.</div></div>
+          <div class="desc-row"><span class="desc-k desc-k-sol">Solución</span><div class="def" contenteditable="" spellcheck="false" data-ph="Describe la solución…" oninput="editSol(1,21,this.textContent)"></div></div>
+        </div>
+        <div class="opts">
+          <span class="seg">
+            <span class="lbl">¿Resuelto?</span>
+            <button class="" onclick="setSol(1,21,'si')">Sí</button>
+            <button class="on-no" onclick="setSol(1,21,'no')">No</button>
+          </span>
+          <span class="chip-sap " onclick="toggleSap(1,21)">⊞ Se soluciona con SAP</span>
+        </div>
+      </div><div class="item ">
+        <div class="item-top">
+          <input type="checkbox" class="chk" id="c1_22" onchange="toggle(1,22,this.checked)">
+          <label class="box" for="c1_22"></label>
+          <span class="txt" contenteditable="" spellcheck="false" oninput="edit(1,22,this.textContent)">Resolver consultas, tiempo perdido</span>
+          <span class="rm" onclick="rmItem(1,22)">✕</span>
+        </div>
+        <div class="desc">
+          <div class="desc-row"><span class="desc-k desc-k-prob">Problema</span><div class="def" contenteditable="" spellcheck="false" data-ph="Describe el problema…" oninput="editDef(1,22,this.textContent)">Personal recurre a hacer consultas referentes a SAP de forma muy recurrente.</div></div>
+          <div class="desc-row"><span class="desc-k desc-k-sol">Solución</span><div class="def" contenteditable="" spellcheck="false" data-ph="Describe la solución…" oninput="editSol(1,22,this.textContent)"></div></div>
+        </div>
+        <div class="opts">
+          <span class="seg">
+            <span class="lbl">¿Resuelto?</span>
+            <button class="" onclick="setSol(1,22,'si')">Sí</button>
+            <button class="on-no" onclick="setSol(1,22,'no')">No</button>
+          </span>
+          <span class="chip-sap " onclick="toggleSap(1,22)">⊞ Se soluciona con SAP</span>
+        </div>
+      </div><div class="item ">
+        <div class="item-top">
+          <input type="checkbox" class="chk" id="c1_23" onchange="toggle(1,23,this.checked)">
+          <label class="box" for="c1_23"></label>
+          <span class="txt" contenteditable="" spellcheck="false" oninput="edit(1,23,this.textContent)">Recibir y revisar insumos T/P</span>
+          <span class="rm" onclick="rmItem(1,23)">✕</span>
+        </div>
+        <div class="desc">
+          <div class="desc-row"><span class="desc-k desc-k-prob">Problema</span><div class="def" contenteditable="" spellcheck="false" data-ph="Describe el problema…" oninput="editDef(1,23,this.textContent)">Recibir insumos en oficina y repartir a los departamentos.</div></div>
+          <div class="desc-row"><span class="desc-k desc-k-sol">Solución</span><div class="def" contenteditable="" spellcheck="false" data-ph="Describe la solución…" oninput="editSol(1,23,this.textContent)"></div></div>
+        </div>
+        <div class="opts">
+          <span class="seg">
+            <span class="lbl">¿Resuelto?</span>
+            <button class="" onclick="setSol(1,23,'si')">Sí</button>
+            <button class="on-no" onclick="setSol(1,23,'no')">No</button>
+          </span>
+          <span class="chip-sap " onclick="toggleSap(1,23)">⊞ Se soluciona con SAP</span>
+        </div>
+      </div><div class="item ">
+        <div class="item-top">
+          <input type="checkbox" class="chk" id="c1_24" onchange="toggle(1,24,this.checked)">
+          <label class="box" for="c1_24"></label>
+          <span class="txt" contenteditable="" spellcheck="false" oninput="edit(1,24,this.textContent)">Órdenes de compra, en espera de factura/crédito</span>
+          <span class="rm" onclick="rmItem(1,24)">✕</span>
+        </div>
+        <div class="desc">
+          <div class="desc-row"><span class="desc-k desc-k-prob">Problema</span><div class="def" contenteditable="" spellcheck="false" data-ph="Describe el problema…" oninput="editDef(1,24,this.textContent)">Adquisiciones. Esperar factura de proveedores con crédito / esperar por cupo de crédito limita la próxima compra.</div></div>
+          <div class="desc-row"><span class="desc-k desc-k-sol">Solución</span><div class="def" contenteditable="" spellcheck="false" data-ph="Describe la solución…" oninput="editSol(1,24,this.textContent)"></div></div>
+        </div>
+        <div class="opts">
+          <span class="seg">
+            <span class="lbl">¿Resuelto?</span>
+            <button class="" onclick="setSol(1,24,'si')">Sí</button>
+            <button class="on-no" onclick="setSol(1,24,'no')">No</button>
+          </span>
+          <span class="chip-sap " onclick="toggleSap(1,24)">⊞ Se soluciona con SAP</span>
+        </div>
+      </div><div class="item ">
+        <div class="item-top">
+          <input type="checkbox" class="chk" id="c1_25" onchange="toggle(1,25,this.checked)">
+          <label class="box" for="c1_25"></label>
+          <span class="txt" contenteditable="" spellcheck="false" oninput="edit(1,25,this.textContent)">Facturas desconocidas</span>
+          <span class="rm" onclick="rmItem(1,25)">✕</span>
+        </div>
+        <div class="desc">
+          <div class="desc-row"><span class="desc-k desc-k-prob">Problema</span><div class="def" contenteditable="" spellcheck="false" data-ph="Describe el problema…" oninput="editDef(1,25,this.textContent)">Identificación de facturas por compras de otros departamentos.</div></div>
+          <div class="desc-row"><span class="desc-k desc-k-sol">Solución</span><div class="def" contenteditable="" spellcheck="false" data-ph="Describe la solución…" oninput="editSol(1,25,this.textContent)"></div></div>
+        </div>
+        <div class="opts">
+          <span class="seg">
+            <span class="lbl">¿Resuelto?</span>
+            <button class="" onclick="setSol(1,25,'si')">Sí</button>
+            <button class="on-no" onclick="setSol(1,25,'no')">No</button>
+          </span>
+          <span class="chip-sap " onclick="toggleSap(1,25)">⊞ Se soluciona con SAP</span>
+        </div>
+      </div><div class="item ">
+        <div class="item-top">
+          <input type="checkbox" class="chk" id="c1_26" onchange="toggle(1,26,this.checked)">
+          <label class="box" for="c1_26"></label>
+          <span class="txt" contenteditable="" spellcheck="false" oninput="edit(1,26,this.textContent)">Exceso de correos</span>
+          <span class="rm" onclick="rmItem(1,26)">✕</span>
+        </div>
+        <div class="desc">
+          <div class="desc-row"><span class="desc-k desc-k-prob">Problema</span><div class="def" contenteditable="" spellcheck="false" data-ph="Describe el problema…" oninput="editDef(1,26,this.textContent)">Holding.</div></div>
+          <div class="desc-row"><span class="desc-k desc-k-sol">Solución</span><div class="def" contenteditable="" spellcheck="false" data-ph="Describe la solución…" oninput="editSol(1,26,this.textContent)"></div></div>
+        </div>
+        <div class="opts">
+          <span class="seg">
+            <span class="lbl">¿Resuelto?</span>
+            <button class="" onclick="setSol(1,26,'si')">Sí</button>
+            <button class="on-no" onclick="setSol(1,26,'no')">No</button>
+          </span>
+          <span class="chip-sap " onclick="toggleSap(1,26)">⊞ Se soluciona con SAP</span>
+        </div>
+      </div><div class="item ">
+        <div class="item-top">
+          <input type="checkbox" class="chk" id="c1_27" onchange="toggle(1,27,this.checked)">
+          <label class="box" for="c1_27"></label>
+          <span class="txt" contenteditable="" spellcheck="false" oninput="edit(1,27,this.textContent)">Doble escaneo O/C</span>
+          <span class="rm" onclick="rmItem(1,27)">✕</span>
+        </div>
+        <div class="desc">
+          <div class="desc-row"><span class="desc-k desc-k-prob">Problema</span><div class="def" contenteditable="" spellcheck="false" data-ph="Describe el problema…" oninput="editDef(1,27,this.textContent)">Adquisiciones. Para pedir servicio con crédito se envía orden de compra firmada.</div></div>
+          <div class="desc-row"><span class="desc-k desc-k-sol">Solución</span><div class="def" contenteditable="" spellcheck="false" data-ph="Describe la solución…" oninput="editSol(1,27,this.textContent)"></div></div>
+        </div>
+        <div class="opts">
+          <span class="seg">
+            <span class="lbl">¿Resuelto?</span>
+            <button class="" onclick="setSol(1,27,'si')">Sí</button>
+            <button class="on-no" onclick="setSol(1,27,'no')">No</button>
+          </span>
+          <span class="chip-sap " onclick="toggleSap(1,27)">⊞ Se soluciona con SAP</span>
+        </div>
+      </div><div class="item ">
+        <div class="item-top">
+          <input type="checkbox" class="chk" id="c1_28" onchange="toggle(1,28,this.checked)">
+          <label class="box" for="c1_28"></label>
+          <span class="txt" contenteditable="" spellcheck="false" oninput="edit(1,28,this.textContent)">Tiempo de revisión contabilidad</span>
+          <span class="rm" onclick="rmItem(1,28)">✕</span>
+        </div>
+        <div class="desc">
+          <div class="desc-row"><span class="desc-k desc-k-prob">Problema</span><div class="def" contenteditable="" spellcheck="false" data-ph="Describe el problema…" oninput="editDef(1,28,this.textContent)">Krisna. Tiempo de revisión de órdenes de compra e ingreso a contabilidad (mucho tiempo de espera).</div></div>
+          <div class="desc-row"><span class="desc-k desc-k-sol">Solución</span><div class="def" contenteditable="" spellcheck="false" data-ph="Describe la solución…" oninput="editSol(1,28,this.textContent)"></div></div>
+        </div>
+        <div class="opts">
+          <span class="seg">
+            <span class="lbl">¿Resuelto?</span>
+            <button class="" onclick="setSol(1,28,'si')">Sí</button>
+            <button class="on-no" onclick="setSol(1,28,'no')">No</button>
+          </span>
+          <span class="chip-sap " onclick="toggleSap(1,28)">⊞ Se soluciona con SAP</span>
+        </div>
+      </div><div class="item ">
+        <div class="item-top">
+          <input type="checkbox" class="chk" id="c1_29" onchange="toggle(1,29,this.checked)">
+          <label class="box" for="c1_29"></label>
+          <span class="txt" contenteditable="" spellcheck="false" oninput="edit(1,29,this.textContent)">Cotizaciones vencidas</span>
+          <span class="rm" onclick="rmItem(1,29)">✕</span>
+        </div>
+        <div class="desc">
+          <div class="desc-row"><span class="desc-k desc-k-prob">Problema</span><div class="def" contenteditable="" spellcheck="false" data-ph="Describe el problema…" oninput="editDef(1,29,this.textContent)">Emilio. Por no pagarse a tiempo la orden de compra se vence la cotización, lo que obliga a volver a cotizar y posiblemente no encontrar stock del producto.</div></div>
+          <div class="desc-row"><span class="desc-k desc-k-sol">Solución</span><div class="def" contenteditable="" spellcheck="false" data-ph="Describe la solución…" oninput="editSol(1,29,this.textContent)"></div></div>
+        </div>
+        <div class="opts">
+          <span class="seg">
+            <span class="lbl">¿Resuelto?</span>
+            <button class="" onclick="setSol(1,29,'si')">Sí</button>
+            <button class="on-no" onclick="setSol(1,29,'no')">No</button>
+          </span>
+          <span class="chip-sap " onclick="toggleSap(1,29)">⊞ Se soluciona con SAP</span>
+        </div>
+      </div><div class="item ">
+        <div class="item-top">
+          <input type="checkbox" class="chk" id="c1_30" onchange="toggle(1,30,this.checked)">
+          <label class="box" for="c1_30"></label>
+          <span class="txt" contenteditable="" spellcheck="false" oninput="edit(1,30,this.textContent)">Disponibilidad del proveedor por no pago</span>
+          <span class="rm" onclick="rmItem(1,30)">✕</span>
+        </div>
+        <div class="desc">
+          <div class="desc-row"><span class="desc-k desc-k-prob">Problema</span><div class="def" contenteditable="" spellcheck="false" data-ph="Describe el problema…" oninput="editDef(1,30,this.textContent)">No disponibilidad del proveedor por no pago.</div></div>
+          <div class="desc-row"><span class="desc-k desc-k-sol">Solución</span><div class="def" contenteditable="" spellcheck="false" data-ph="Describe la solución…" oninput="editSol(1,30,this.textContent)"></div></div>
+        </div>
+        <div class="opts">
+          <span class="seg">
+            <span class="lbl">¿Resuelto?</span>
+            <button class="" onclick="setSol(1,30,'si')">Sí</button>
+            <button class="on-no" onclick="setSol(1,30,'no')">No</button>
+          </span>
+          <span class="chip-sap " onclick="toggleSap(1,30)">⊞ Se soluciona con SAP</span>
+        </div>
+      </div>
+        <button class="add-item" onclick="addItem(1)">+ Agregar problema</button>
+      </div></section></div>
+
+<script>
+const AREAS = [
+  {
+    "nombre": "RECLUTAMIENTO",
+    "color": "#FF4D5E",
+    "items": [
+      {
+        "texto": "Problema internet",
+        "hecho": false,
+        "solucion": "",
+        "sap": false,
+        "def": "Responsable: Holding · Impacto: Diario · Tipo: Recurso",
+        "sol": ""
+      },
+      {
+        "texto": "Tiempo de respuesta",
+        "hecho": false,
+        "solucion": "",
+        "sap": false,
+        "def": "Responsable: Postulante · Impacto: Diario · Tipo: Recurso",
+        "sol": ""
+      },
+      {
+        "texto": "No se mostraban los tiempos de sala",
+        "hecho": false,
+        "solucion": "",
+        "sap": false,
+        "def": "Responsable: Holding · Impacto: Semanal · Tipo: Recurso",
+        "sol": ""
+      },
+      {
+        "texto": "No poseer lugar adecuado para llamar",
+        "hecho": false,
+        "solucion": "",
+        "sap": false,
+        "def": "Responsable: Holding · Impacto: Diario · Tipo: Recurso",
+        "sol": ""
+      },
+      {
+        "texto": "Canales limitados",
+        "hecho": false,
+        "solucion": "",
+        "sap": false,
+        "def": "Responsable: Emilio · Impacto: Diario · Tipo: Recurso",
+        "sol": ""
+      },
+      {
+        "texto": "Problema internet",
+        "hecho": false,
+        "solucion": "",
+        "sap": false,
+        "def": "Responsable: Holding · Impacto: Diario · Tipo: Recurso",
+        "sol": ""
+      },
+      {
+        "texto": "Falta de comunicación proyectos nuevos",
+        "hecho": false,
+        "solucion": "",
+        "sap": false,
+        "def": "Responsable: Licitación · Impacto: Mensual · Tipo: Proceso",
+        "sol": ""
+      },
+      {
+        "texto": "Carga laboral de otro departamento",
+        "hecho": false,
+        "solucion": "",
+        "sap": false,
+        "def": "Responsable: Brian · Impacto: Diario · Tipo: Proceso",
+        "sol": ""
+      },
+      {
+        "texto": "RRHH demora en producir fechas de ingreso",
+        "hecho": false,
+        "solucion": "",
+        "sap": false,
+        "def": "Responsable: RRHH · Impacto: Semanal · Tipo: Proceso",
+        "sol": ""
+      },
+      {
+        "texto": "Desistimiento por no entrega de uniforme",
+        "hecho": false,
+        "solucion": "",
+        "sap": false,
+        "def": "Responsable: Terreno · Impacto: Diario · Tipo: Proceso",
+        "sol": ""
+      },
+      {
+        "texto": "Feedback requerimiento instalaciones",
+        "hecho": false,
+        "solucion": "",
+        "sap": false,
+        "def": "Responsable: Operaciones · Impacto: Diario · Tipo: Proceso",
+        "sol": ""
+      },
+      {
+        "texto": "Rentas bajas fuera del mercado",
+        "hecho": false,
+        "solucion": "",
+        "sap": false,
+        "def": "Responsable: Licitaciones · Impacto: Diario · Tipo: Recurso",
+        "sol": ""
+      },
+      {
+        "texto": "No tener plataforma para validar",
+        "hecho": false,
+        "solucion": "",
+        "sap": false,
+        "def": "Responsable: Emilio · Impacto: Diario · Tipo: Recurso",
+        "sol": ""
+      },
+      {
+        "texto": "Espacio para entrevista",
+        "hecho": false,
+        "solucion": "",
+        "sap": false,
+        "def": "Responsable: Holding · Impacto: Diario · Tipo: Proceso",
+        "sol": ""
+      },
+      {
+        "texto": "Falta de comunicación proyectos nuevos",
+        "hecho": false,
+        "solucion": "",
+        "sap": false,
+        "def": "Responsable: Licitaciones · Impacto: Mensual · Tipo: Proceso",
+        "sol": ""
+      },
+      {
+        "texto": "Áreas no envían feedback candidatos internos",
+        "hecho": false,
+        "solucion": "",
+        "sap": false,
+        "def": "Responsable: Holding · Impacto: Semanal · Tipo: Proceso",
+        "sol": ""
+      },
+      {
+        "texto": "Despidos masivos",
+        "hecho": false,
+        "solucion": "",
+        "sap": false,
+        "def": "Responsable: Operaciones · Impacto: Mensual · Tipo: Proceso",
+        "sol": ""
+      },
+      {
+        "texto": "Pérdida de tiempo en firma",
+        "hecho": false,
+        "solucion": "",
+        "sap": false,
+        "def": "Responsable: Holding · Impacto: Diario · Tipo: Proceso",
+        "sol": ""
+      },
+      {
+        "texto": "Problema internet",
+        "hecho": false,
+        "solucion": "",
+        "sap": false,
+        "def": "Responsable: Holding · Impacto: Diario · Tipo: Recurso",
+        "sol": ""
+      },
+      {
+        "texto": "No compra de uniformes",
+        "hecho": false,
+        "solucion": "",
+        "sap": false,
+        "def": "Responsable: Compras · Impacto: Diario · Tipo: Recurso",
+        "sol": ""
+      },
+      {
+        "texto": "Sin espacio para entrevistas",
+        "hecho": false,
+        "solucion": "",
+        "sap": false,
+        "def": "Responsable: Holding · Impacto: Diario · Tipo: Recurso",
+        "sol": ""
+      }
+    ],
+    "sap": false
+  },
+  {
+    "nombre": "ADQUISICIONES",
+    "color": "#22D3C5",
+    "items": [
+      {
+        "texto": "Tiempo de respuesta",
+        "hecho": false,
+        "solucion": "no",
+        "sap": false,
+        "def": "Proveedor / tiempo externo de respuesta de proveedores. Tiempo asociado a la respuesta de cada solicitud por parte de los proveedores.",
+        "sol": ""
+      },
+      {
+        "texto": "Deuda de pago",
+        "hecho": false,
+        "solucion": "si",
+        "sap": false,
+        "def": "Emilio (departamento de finanzas). Deuda de pago con proveedores.",
+        "sol": ""
+      },
+      {
+        "texto": "Tiempo de pago",
+        "hecho": false,
+        "solucion": "si",
+        "sap": false,
+        "def": "Emilio (departamento de finanzas). Tiempo de pago de facturas de proveedores.",
+        "sol": ""
+      },
+      {
+        "texto": "Presentación a proveedores",
+        "hecho": false,
+        "solucion": "no",
+        "sap": false,
+        "def": "Tiempo perdido en presentar la empresa a proveedores nuevos (buscar automatización).",
+        "sol": ""
+      },
+      {
+        "texto": "Único creadoren SAP",
+        "hecho": false,
+        "solucion": "no",
+        "sap": false,
+        "def": "Daniel es el único creador de artículos en SAP (todos recurren a él para crear artículos).",
+        "sol": ""
+      },
+      {
+        "texto": "Productos duplicados",
+        "hecho": false,
+        "solucion": "no",
+        "sap": false,
+        "def": "Cuando se cargaron los artículos en SAP por parte de Alan, muchos productos quedaron duplicados dentro de la plataforma y con nomenclatura equivocada, ya que se cargaron todos a la misma empresa.",
+        "sol": ""
+      },
+      {
+        "texto": "Interrupción de labores",
+        "hecho": false,
+        "solucion": "no",
+        "sap": false,
+        "def": "Interrupción de labores.",
+        "sol": ""
+      },
+      {
+        "texto": "Solicitud incompleta",
+        "hecho": false,
+        "solucion": "no",
+        "sap": false,
+        "def": "Solicitante. Las solicitudes de compra vienen incompletas con muchos datos pendientes; se necesita formulario.",
+        "sol": ""
+      },
+      {
+        "texto": "Tiempo de revisión",
+        "hecho": false,
+        "solucion": "no",
+        "sap": false,
+        "def": "Tiempo de revisión.",
+        "sol": ""
+      },
+      {
+        "texto": "Información incompleta",
+        "hecho": false,
+        "solucion": "no",
+        "sap": false,
+        "def": "Krisna. Información incompleta del status de facturas por empresa, sin detalle; se necesita formulario.",
+        "sol": ""
+      },
+      {
+        "texto": "Gerente no se encuentra en su puesto de trabajo",
+        "hecho": false,
+        "solucion": "si",
+        "sap": true,
+        "def": "Gerente no se encuentra en su puesto de trabajo.",
+        "sol": ""
+      },
+      {
+        "texto": "Gerente no se encuentra en su oficina",
+        "hecho": false,
+        "solucion": "si",
+        "sap": true,
+        "def": "Dificultad para conseguir firmas para documentación.",
+        "sol": ""
+      },
+      {
+        "texto": "Correo innecesario",
+        "hecho": false,
+        "solucion": "no",
+        "sap": false,
+        "def": "Cultura de copiar a mucha gente en los correos provoca pérdidas de tiempo.",
+        "sol": ""
+      },
+      {
+        "texto": "No notificación de rechazo O/C",
+        "hecho": false,
+        "solucion": "no",
+        "sap": false,
+        "def": "No notificación de rechazo de pago de órdenes de compra al departamento de adquisiciones.",
+        "sol": ""
+      },
+      {
+        "texto": "Falta de datos",
+        "hecho": false,
+        "solucion": "si",
+        "sap": true,
+        "def": "Proveedor / solicitante. Falta de datos.",
+        "sol": ""
+      },
+      {
+        "texto": "T/P guías urgente",
+        "hecho": false,
+        "solucion": "no",
+        "sap": false,
+        "def": "A diario se acerca personal a solicitarle guías con urgencia, lo que lo saca de sus funciones habituales y genera pérdida de tiempo (prohibir estas prácticas).",
+        "sol": ""
+      },
+      {
+        "texto": "Planificación de rutas",
+        "hecho": false,
+        "solucion": "no",
+        "sap": false,
+        "def": "La bodega no tiene rutas definidas para retiros y despachos.",
+        "sol": ""
+      },
+      {
+        "texto": "Parámetros plataforma",
+        "hecho": false,
+        "solucion": "no",
+        "sap": false,
+        "def": "Plataforma. Cada vez que sale algo de bodega se debe realizar guía de despacho para evitar problemas con la carga ante una fiscalización / interrupción de labores (plataforma SII).",
+        "sol": ""
+      },
+      {
+        "texto": "Bodega disponibilidad",
+        "hecho": false,
+        "solucion": "no",
+        "sap": false,
+        "def": "Bodega / sin supervisión / sin control / sin tareas diarias.",
+        "sol": ""
+      },
+      {
+        "texto": "Disponibilidad proveedor",
+        "hecho": false,
+        "solucion": "no",
+        "sap": false,
+        "def": "Proveedores se niegan a vender productos por atrasos en los pagos.",
+        "sol": ""
+      },
+      {
+        "texto": "Disponibilidad bodega",
+        "hecho": false,
+        "solucion": "no",
+        "sap": false,
+        "def": "Bodega / sin supervisión / sin control / sin tareas diarias.",
+        "sol": ""
+      },
+      {
+        "texto": "Reunión no programada T/P",
+        "hecho": false,
+        "solucion": "no",
+        "sap": false,
+        "def": "Reuniones no programadas interrumpen el tiempo de trabajo.",
+        "sol": ""
+      },
+      {
+        "texto": "Resolver consultas, tiempo perdido",
+        "hecho": false,
+        "solucion": "no",
+        "sap": false,
+        "def": "Personal recurre a hacer consultas referentes a SAP de forma muy recurrente.",
+        "sol": ""
+      },
+      {
+        "texto": "Recibir y revisar insumos T/P",
+        "hecho": false,
+        "solucion": "no",
+        "sap": false,
+        "def": "Recibir insumos en oficina y repartir a los departamentos.",
+        "sol": ""
+      },
+      {
+        "texto": "Órdenes de compra, en espera de factura/crédito",
+        "hecho": false,
+        "solucion": "no",
+        "sap": false,
+        "def": "Adquisiciones. Esperar factura de proveedores con crédito / esperar por cupo de crédito limita la próxima compra.",
+        "sol": ""
+      },
+      {
+        "texto": "Facturas desconocidas",
+        "hecho": false,
+        "solucion": "no",
+        "sap": false,
+        "def": "Identificación de facturas por compras de otros departamentos.",
+        "sol": ""
+      },
+      {
+        "texto": "Exceso de correos",
+        "hecho": false,
+        "solucion": "no",
+        "sap": false,
+        "def": "Holding.",
+        "sol": ""
+      },
+      {
+        "texto": "Doble escaneo O/C",
+        "hecho": false,
+        "solucion": "no",
+        "sap": false,
+        "def": "Adquisiciones. Para pedir servicio con crédito se envía orden de compra firmada.",
+        "sol": ""
+      },
+      {
+        "texto": "Tiempo de revisión contabilidad",
+        "hecho": false,
+        "solucion": "no",
+        "sap": false,
+        "def": "Krisna. Tiempo de revisión de órdenes de compra e ingreso a contabilidad (mucho tiempo de espera).",
+        "sol": ""
+      },
+      {
+        "texto": "Cotizaciones vencidas",
+        "hecho": false,
+        "solucion": "no",
+        "sap": false,
+        "def": "Emilio. Por no pagarse a tiempo la orden de compra se vence la cotización, lo que obliga a volver a cotizar y posiblemente no encontrar stock del producto.",
+        "sol": ""
+      },
+      {
+        "texto": "Disponibilidad del proveedor por no pago",
+        "hecho": false,
+        "solucion": "no",
+        "sap": false,
+        "def": "No disponibilidad del proveedor por no pago.",
+        "sol": ""
+      }
+    ],
+    "sap": true
+  },
+  {
+    "nombre": "NUEVA ÁREA",
+    "color": "#FBBF24",
+    "items": [
+      {
+        "texto": "Nueva problemática",
+        "hecho": false,
+        "solucion": "",
+        "sap": false,
+        "def": "",
+        "sol": ""
+      }
+    ]
+  },
+  {
+    "nombre": "NUEVA ÁREA",
+    "color": "#A78BFA",
+    "items": [
+      {
+        "texto": "Nueva problemática",
+        "hecho": false,
+        "solucion": "",
+        "sap": false,
+        "def": "",
+        "sol": ""
+      }
+    ]
+  }
+];
+const PALETA = ['#FF4D5E','#22D3C5','#FBBF24','#A78BFA','#34D399','#60A5FA','#F472B6'];
+let FILTER = '__all__';
+function setFilter(v){FILTER=v;render();}
+function buildFilter(){
+  const sel=document.getElementById('areaFilter'); if(!sel) return;
+  if(FILTER!=='__all__' && Number(FILTER)>=AREAS.length) FILTER='__all__';
+  let opts='<option value="__all__">Todas las áreas</option>';
+  AREAS.forEach((a,ai)=>{opts+=`<option value="${ai}">${escapeHtml(a.nombre)}</option>`;});
+  sel.innerHTML=opts;
+  sel.value=FILTER;
+}
+
+function norm(it){
+  if(typeof it==='string') it={texto:it};
+  return {texto:it.texto||'',hecho:!!it.hecho,solucion:it.solucion||'',sap:!!it.sap,def:it.def||'',sol:it.sol||''};
+}
+function normAll(){AREAS.forEach(a=>{a.items=(a.items||[]).map(norm);if(!a.color)a.color='#888';});}
+function escapeHtml(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function makeDonut(si,no,nd,total){
+  const r=34, c=2*Math.PI*r, segs=[{v:si,col:'var(--ok)'},{v:no,col:'var(--no)'},{v:nd,col:'#3a424d'}];
+  let off=0, arcs='';
+  if(total>0){segs.forEach(s=>{if(s.v<=0)return;const len=c*(s.v/total);arcs+=`<circle cx="46" cy="46" r="${r}" fill="none" stroke="${s.col}" stroke-width="11" stroke-dasharray="${len} ${c-len}" stroke-dashoffset="${-off}" transform="rotate(-90 46 46)"></circle>`;off+=len;});}
+  else{arcs=`<circle cx="46" cy="46" r="${r}" fill="none" stroke="#2a2f37" stroke-width="11"></circle>`;}
+  const pct = total>0 ? Math.round(si/total*100) : 0;
+  return `<svg class="donut" viewBox="0 0 92 92" width="92" height="92">${arcs}<circle cx="46" cy="46" r="${r-9}" fill="#ffffff"></circle><text class="big" x="46" y="44" text-anchor="middle" dominant-baseline="middle">${pct}%</text><text class="sub" x="46" y="58" text-anchor="middle">CON SOLUCIÓN</text></svg>`;
+}
+
+function render(){
+  normAll();
+  buildFilter();
+  const b=document.getElementById('board'); b.innerHTML='';
+  AREAS.forEach((a,ai)=>{
+    if(FILTER!=='__all__' && String(ai)!==FILTER) return;
+    const col=document.createElement('section'); col.className='col'; col.style.setProperty('--c',a.color);
+    const total=a.items.length;
+    const hechos=a.items.filter(p=>p.hecho).length;
+    const conSol=a.items.filter(p=>p.solucion==='si'||p.sap).length;
+    const sinSol=a.items.filter(p=>p.solucion==='no'&&!p.sap).length;
+    const sinDef=total-conSol-sinSol;
+    const conSap=a.items.filter(p=>p.sap).length;
+    let body='';
+    a.items.forEach((p,pi)=>{
+      const sapChip = a.sap ? `<span class="chip-sap ${p.sap?'on':''}" onclick="toggleSap(${ai},${pi})">⊞ Se soluciona con SAP</span>` : '';
+      body+=`<div class="item ${p.hecho?'done':''}">
+        <div class="item-top">
+          <input type="checkbox" class="chk" id="c${ai}_${pi}" ${p.hecho?'checked':''} onchange="toggle(${ai},${pi},this.checked)">
+          <label class="box" for="c${ai}_${pi}"></label>
+          <span class="txt" contenteditable spellcheck="false" oninput="edit(${ai},${pi},this.textContent)">${escapeHtml(p.texto)}</span>
+          <span class="rm" onclick="rmItem(${ai},${pi})">✕</span>
+        </div>
+        <div class="desc">
+          <div class="desc-row"><span class="desc-k desc-k-prob">Problema</span><div class="def" contenteditable spellcheck="false" data-ph="Describe el problema…" oninput="editDef(${ai},${pi},this.textContent)">${escapeHtml(p.def)}</div></div>
+          <div class="desc-row"><span class="desc-k desc-k-sol">Solución</span><div class="def" contenteditable spellcheck="false" data-ph="Describe la solución…" oninput="editSol(${ai},${pi},this.textContent)">${escapeHtml(p.sol)}</div></div>
+        </div>
+        <div class="opts">
+          <span class="seg">
+            <span class="lbl">¿Resuelto?</span>
+            <button class="${(p.solucion==='si'||p.sap)?'on-yes':''}" onclick="setSol(${ai},${pi},'si')">Sí</button>
+            <button class="${(p.solucion==='no'&&!p.sap)?'on-no':''}" onclick="setSol(${ai},${pi},'no')">No</button>
+          </span>
+          ${sapChip}
+        </div>
+      </div>`;
+    });
+    const donut = makeDonut(conSol, sinSol, sinDef, total);
+    const sapMeta = a.sap ? `<span>⊞ ${conSap} SAP</span>` : '';
+    col.innerHTML=`
+      <div class="col-head">
+        <div class="t"><span class="dot"></span><h1 contenteditable spellcheck="false" oninput="rename(${ai},this.textContent)">${escapeHtml(a.nombre)}</h1></div>
+        <button class="sapt ${a.sap?'on':''}" onclick="toggleAreaSap(${ai})" title="Mostrar/ocultar opción SAP en esta área">SAP</button>
+        <button class="del" onclick="rmArea(${ai})" title="Eliminar área">✕</button>
+        <div class="chart-wrap">
+          ${donut}
+          <div class="legend">
+            <div class="lg"><span class="sw" style="background:var(--ok)"></span><b>${conSol}</b> con solución</div>
+            <div class="lg"><span class="sw" style="background:var(--no)"></span><b>${sinSol}</b> sin solución</div>
+            <div class="lg"><span class="sw" style="background:#3a424d"></span><b>${sinDef}</b> sin definir</div>
+            <div class="lg"><span class="sw" style="background:var(--c)"></span><b>${hechos}</b> marcados ✓</div>
+          </div>
+        </div>
+        <div class="meta"><span>${total} problemas</span>${sapMeta}<button class="bulk-no" onclick="allNo(${ai})" title="Marcar todas las soluciones de esta área como No">Todas: No</button></div>
+      </div>
+      <div class="col-body">${body}
+        <button class="add-item" onclick="addItem(${ai})">+ Agregar problema</button>
+      </div>`;
+    b.appendChild(col);
+  });
+}
+
+function rename(i,v){AREAS[i].nombre=v.trim();}
+function edit(ai,pi,v){AREAS[ai].items[pi].texto=v.trim();}
+function editDef(ai,pi,v){AREAS[ai].items[pi].def=v.trim();}
+function editSol(ai,pi,v){AREAS[ai].items[pi].sol=v.trim();}
+function toggle(ai,pi,v){AREAS[ai].items[pi].hecho=v;render();}
+function setSol(ai,pi,v){const it=AREAS[ai].items[pi];it.solucion=(it.solucion===v)?'':v;if(v==='no')it.sap=false;render();}
+function toggleSap(ai,pi){const it=AREAS[ai].items[pi];it.sap=!it.sap;if(it.sap)it.solucion='si';render();}
+function toggleAreaSap(ai){AREAS[ai].sap=!AREAS[ai].sap;render();}
+function allNo(ai){AREAS[ai].items.forEach(it=>{it.solucion='no';it.sap=false;});render();}
+function allNoGlobal(){if(confirm('¿Marcar TODAS las soluciones de todas las áreas como "No"?')){AREAS.forEach(a=>a.items.forEach(it=>{it.solucion='no';it.sap=false;}));render();}}
+function addItem(ai){AREAS[ai].items.push({texto:'Nueva problemática',hecho:false,solucion:'',sap:false,def:'',sol:''});render();}
+function rmItem(ai,pi){AREAS[ai].items.splice(pi,1);render();}
+function addArea(){const c=PALETA[AREAS.length%PALETA.length];AREAS.push({nombre:'NUEVA ÁREA',color:c,items:[{texto:'Nueva problemática',hecho:false,solucion:'',sap:false,def:'',sol:''}]});render();}
+function rmArea(i){if(confirm('¿Eliminar esta área?')){AREAS.splice(i,1);render();}}
+
+function descargar(){
+  const data=JSON.stringify(AREAS,null,2);
+  let doc='<!DOCTYPE html>\n'+document.documentElement.outerHTML;
+  doc=doc.replace(/const AREAS = [\s\S]*?;\n/, 'const AREAS = '+data+';\n');
+  const blob=new Blob([doc],{type:'text/html'});
+  const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='checklist-problematicas.html';a.click();URL.revokeObjectURL(url);
+}
+function descargarJSON(){
+  const blob=new Blob([JSON.stringify(AREAS,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='checklist-problematicas.json';a.click();URL.revokeObjectURL(url);
+}
+function cargarJSON(e){
+  const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=()=>{try{const arr=JSON.parse(r.result);if(!Array.isArray(arr))throw 0;AREAS.length=0;arr.forEach(a=>AREAS.push(a));render();}catch(err){alert('Archivo JSON no válido.');}e.target.value='';};
+  r.readAsText(f);
+}
+render();
+</script>
+</body></html>
