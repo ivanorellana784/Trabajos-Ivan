@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Checklist de Problemáticas — Makigami</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#eef2f8; --panel:#ffffff; --panel2:#f6f9fd; --line:#dfe6f0;
@@ -246,8 +248,8 @@ button{border-radius:12px}
 /* Logo Holding Wiki */
 .brand{display:flex;align-items:center;gap:15px}
 .brand-mark{flex:0 0 auto;display:flex;align-items:center;justify-content:center;
-  width:60px;height:60px;border-radius:16px;background:rgba(255,255,255,.96);
-  box-shadow:0 10px 24px -12px rgba(6,20,40,.6), 0 0 0 1px rgba(255,255,255,.5) inset;padding:6px}
+  width:64px;height:64px;border-radius:18px;background:#fff;
+  box-shadow:0 10px 24px -12px rgba(6,20,40,.55), 0 0 0 1px rgba(29,78,216,.12) inset;padding:8px}
 .brand-mark img{width:100%;height:100%;object-fit:contain;display:block}
 
 /* Panel explicativo */
@@ -318,14 +320,71 @@ button{border-radius:12px}
   .topbar h2{font-size:18px}
 }
 @media print{ .intro,.summary{display:none!important} }
+
+/* ============ v4 · TIPOGRAFÍA CLARA + PANELES COLAPSABLES + ESPACIADO ============ */
+body,button,input,select,textarea{font-family:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",sans-serif}
+body{-webkit-font-smoothing:antialiased;letter-spacing:-.005em}
+.topbar h2{font-weight:800;letter-spacing:-.01em}
+.col-head h1{letter-spacing:.4px;font-weight:800}
+.txt{font-weight:600;letter-spacing:-.005em}
+
+/* Paneles colapsables */
+.intro{align-items:start}
+details.card-soft{padding:0;overflow:hidden}
+details.card-soft summary{list-style:none;cursor:pointer;display:flex;align-items:center;
+  justify-content:space-between;gap:12px;padding:15px 20px;border-radius:var(--r-md)}
+details.card-soft summary::-webkit-details-marker{display:none}
+details.card-soft summary:hover{background:rgba(31,139,134,.06)}
+.s-title{font-size:12.5px;text-transform:uppercase;letter-spacing:1px;color:#1b5a7c;font-weight:800}
+.s-ico{font-size:13px;color:#7d8ca1;transition:transform .22s ease}
+details[open] .s-ico{transform:rotate(180deg)}
+.s-body{padding:0 20px 18px}
+details[open] summary{border-bottom:1px solid rgba(223,230,240,.9);border-radius:var(--r-md) var(--r-md) 0 0;margin-bottom:14px}
+
+/* Mejor uso del espacio dentro de las tarjetas */
+.item{padding:14px 16px}
+.item-top{gap:12px;align-items:flex-start}
+.desc{margin:11px 0 0 0;gap:10px}
+.desc-row{display:grid;grid-template-columns:1fr;gap:4px}
+.desc-k{flex:none;width:fit-content;text-align:left;padding:3px 10px;font-size:9px;letter-spacing:.7px;margin:0}
+.def{padding:0 2px;font-size:12.5px;line-height:1.6;color:#48566a;border-radius:8px}
+.def:hover{background:#f7fafd;border-color:transparent}
+.opts{margin-top:12px;padding-top:11px;gap:10px;align-items:center}
+.seg .lbl{padding:0 11px}
+
+/* ============ v5 · LOGO REFINADO + ANCHO COMPLETO ============ */
+.topbar,.intro,.summary{max-width:none;width:100%}
+.topbar{justify-content:space-between;gap:20px;padding:18px 26px}
+.topbar .sub{max-width:none}
+.brand{flex:1 1 420px;min-width:0}
+.actions{flex:0 0 auto;display:flex;flex-wrap:wrap;gap:9px;align-items:center;justify-content:flex-end}
+.intro{grid-template-columns:1fr 1fr;gap:18px;padding:0 26px}
+.summary{grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px;padding:0 26px}
+.board{padding:2px 26px 26px}
+
+/* Marca */
+.brand{gap:16px;align-items:center}
+.brand-mark{width:56px;height:56px;border-radius:18px;padding:9px;
+  background:linear-gradient(160deg,#ffffff,#eaf3f6);
+  box-shadow:0 12px 26px -14px rgba(4,16,34,.7), 0 0 0 1px rgba(255,255,255,.65) inset;
+  transition:transform .25s ease, box-shadow .25s ease}
+.brand:hover .brand-mark{transform:translateY(-2px) rotate(-2deg);box-shadow:0 18px 34px -16px rgba(4,16,34,.75)}
+.brand-mark img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 2px 4px rgba(6,24,48,.18))}
+.brand-txt{display:flex;flex-direction:column;min-width:0}
+.brand-name{font-size:10.5px;font-weight:800;letter-spacing:2.2px;text-transform:uppercase;
+  color:rgba(255,255,255,.72);margin-bottom:3px}
+.topbar h2{font-size:22px;line-height:1.25}
+@media (max-width:860px){ .intro{grid-template-columns:1fr} .actions{justify-content:flex-start} }
+
 </style></head><body>
 
 
 <div class="topbar">
   <div class="brand">
-    <span class="brand-mark"><img src="/__l5e/assets-v1/60ad0ee6-7503-4abf-a974-8242f9975223/holding-wiki-logo.png" alt="Holding Wiki"></span>
-    <div>
-    <h2>◆ Avance Makigami — Checklist de Problemáticas</h2>
+    <span class="brand-mark"><img loading="eager" src="/__l5e/assets-v1/60ad0ee6-7503-4abf-a974-8242f9975223/holding-wiki-logo.png" alt="Holding Wiki"></span>
+    <div class="brand-txt">
+    <span class="brand-name">Holding Wiki</span>
+    <h2>Avance Makigami — Checklist de Problemáticas</h2>
     <span class="sub">Tablero para seguir, área por área, qué problemas del proceso ya tienen solución y cuáles siguen pendientes.</span>
     </div>
   </div>
@@ -341,20 +400,24 @@ button{border-radius:12px}
 </div>
 
 <div class="intro">
-  <div class="card-soft">
-    <h3>🧭 ¿De qué se trata esta página?</h3>
+  <details class="card-soft">
+    <summary><span class="s-title">🧭 ¿De qué se trata esta página?</span><span class="s-ico">▾</span></summary>
+    <div class="s-body">
     <p>Este es el <span class="keyword">seguimiento del trabajo Makigami</span>: un levantamiento de todos los problemas que hoy frenan nuestros procesos, ordenados por <span class="keyword">área</span> (Reclutamiento, Adquisiciones, etc.).</p>
     <p>Cada tarjeta es <span class="keyword">un problema real</span>, con su descripción y la solución propuesta. A medida que un problema se resuelve, se marca aquí — así el avance queda a la vista sin necesidad de explicarlo.</p>
-  </div>
-  <div class="card-soft">
-    <h3>📖 Cómo leer el tablero</h3>
+    </div>
+  </details>
+  <details class="card-soft">
+    <summary><span class="s-title">📖 Cómo leer el tablero</span><span class="s-ico">▾</span></summary>
+    <div class="s-body">
     <ul class="steps">
       <li><span class="n">1</span><span>Cada <b>columna</b> es un área. Arriba, el <b>gráfico circular</b> muestra el % de problemas que ya tienen solución.</span></li>
       <li><span class="n">2</span><span>En cada tarjeta: <b>Problema</b> (qué pasa) y <b>Solución</b> (qué se hará o se hizo).</span></li>
       <li><span class="n">3</span><span><b>Sí / No</b> indica si el problema ya tiene solución; <b>⊞ SAP</b> marca los que se resuelven con el nuevo sistema.</span></li>
       <li><span class="n">4</span><span>La <b>casilla ✓</b> del título significa que el problema ya está cerrado y verificado.</span></li>
     </ul>
-  </div>
+    </div>
+  </details>
 </div>
 
 <div class="summary" id="summary"></div>
