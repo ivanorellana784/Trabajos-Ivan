@@ -10,8 +10,8 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:"Segoe UI Variable","Segoe UI",system-ui,Arial,sans-serif;color:var(--txt);
   background:
-    radial-gradient(900px 520px at 12% -8%,#dbe7fb 0,transparent 60%),
-    radial-gradient(800px 500px at 88% 0%,#dcf3ef 0,transparent 60%),
+    linear-gradient(rgba(255,255,255,.62),rgba(255,255,255,.62)),
+    url("/__l5e/assets-v1/1b418fdc-f0f8-467a-8f70-0a281a26c011/makigami-bg-aerial-3.jpg") center/cover no-repeat,
     var(--bg);
   background-attachment:fixed;
   padding:26px 18px 40px;min-height:100vh;
@@ -166,7 +166,6 @@ button:active{transform:translateY(0)}
 /* ============ REFINAMIENTO VISUAL v2 (sobrescribe lo anterior) ============ */
 body{
   background:
-    linear-gradient(rgba(255,255,255,0.62), rgba(255,255,255,0.62)),
     url('/__l5e/assets-v1/1b418fdc-f0f8-467a-8f70-0a281a26c011/makigami-bg-aerial-3.jpg')
     center / cover no-repeat fixed;
   padding:22px 22px 56px; perspective:none;
@@ -227,19 +226,111 @@ button:hover{transform:none;filter:brightness(1.06);box-shadow:0 6px 14px -8px r
 .desc-k-sol{background:#eef9f4;border-color:#cfeade;color:#0d7a53}
 .def{font-size:12px;color:#4c5b6e}
 .opts{margin-top:9px;padding-top:9px;gap:8px;border-top:1px solid #eef2f7}
-.seg{box-shadow:none;border-radius:8px}
+/* ============ v3 · CLARIDAD + BORDES SUAVES + SOMBRAS ============ */
+:root{
+  --r-lg:26px; --r-md:20px; --r-sm:14px;
+  --sh-soft:0 2px 6px rgba(22,40,72,.05), 0 12px 28px -14px rgba(22,40,72,.22);
+  --sh-med:0 4px 10px rgba(22,40,72,.07), 0 22px 46px -22px rgba(22,40,72,.30);
+  --sh-hi:0 8px 18px rgba(22,40,72,.10), 0 34px 64px -26px rgba(22,40,72,.36);
+}
+
+/* Cabecera principal */
+.topbar{border-radius:var(--r-lg);padding:20px 24px;box-shadow:var(--sh-med);align-items:flex-start;
+  background:linear-gradient(120deg,#123256 0%,#1b5a7c 55%,#1f8b86 100%)}
+.topbar h2{font-size:21px;font-weight:800;letter-spacing:.2px}
+.topbar .sub{display:block;margin-top:6px;font-size:12.5px;font-weight:500;color:rgba(255,255,255,.85);
+  max-width:660px;line-height:1.55}
+button{border-radius:12px}
+.filter-wrap{border-radius:12px}
+
+/* Logo Holding Wiki */
+.brand{display:flex;align-items:center;gap:15px}
+.brand-mark{flex:0 0 auto;display:flex;align-items:center;justify-content:center;
+  width:60px;height:60px;border-radius:16px;background:rgba(255,255,255,.96);
+  box-shadow:0 10px 24px -12px rgba(6,20,40,.6), 0 0 0 1px rgba(255,255,255,.5) inset;padding:6px}
+.brand-mark img{width:100%;height:100%;object-fit:contain;display:block}
+
+/* Panel explicativo */
+.intro{max-width:1400px;margin:0 auto 18px;display:grid;grid-template-columns:1.2fr 1fr;gap:16px}
+.card-soft{background:rgba(255,255,255,.94);backdrop-filter:blur(8px);
+  border:1px solid rgba(223,230,240,.9);border-radius:var(--r-md);
+  padding:18px 20px;box-shadow:var(--sh-soft)}
+.intro h3{font-size:12.5px;text-transform:uppercase;letter-spacing:1px;color:#1b5a7c;font-weight:800;
+  margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.intro p{font-size:13px;line-height:1.65;color:#4c5b6e}
+.intro p+p{margin-top:9px}
+.keyword{color:#16273c;font-weight:700}
+.steps{list-style:none;display:flex;flex-direction:column;gap:10px}
+.steps li{display:flex;gap:11px;align-items:flex-start;font-size:12.5px;color:#4c5b6e;line-height:1.55}
+.steps .n{flex:0 0 22px;height:22px;border-radius:999px;display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:800;color:#fff;background:linear-gradient(160deg,#2f8fd0,#1b5a7c);
+  box-shadow:0 5px 12px -5px rgba(27,90,124,.6)}
+.steps b{color:#1c2637;font-weight:700}
+
+/* Resumen global */
+.summary{max-width:1400px;margin:0 auto 22px;display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px}
+.kpi{background:rgba(255,255,255,.94);backdrop-filter:blur(8px);border:1px solid rgba(223,230,240,.9);
+  border-radius:var(--r-md);padding:16px 18px;box-shadow:var(--sh-soft);
+  transition:transform .2s ease, box-shadow .2s ease}
+.kpi:hover{transform:translateY(-3px);box-shadow:var(--sh-med)}
+.kpi .k{font-size:10.5px;text-transform:uppercase;letter-spacing:.9px;color:var(--mut);font-weight:800}
+.kpi .v{font-size:30px;font-weight:800;line-height:1.15;margin-top:4px;color:#16273c}
+.kpi .h{font-size:11.5px;color:var(--mut);margin-top:3px}
+.kpi .track{height:9px;border-radius:999px;background:#e9eef6;overflow:hidden;margin-top:11px;
+  box-shadow:inset 0 1px 3px rgba(22,40,72,.12)}
+.kpi .track i{display:block;height:100%;border-radius:999px;
+  background:linear-gradient(90deg,#1f8b86,#22c188);transition:width .45s ease}
+.kpi.ok .v{color:var(--ok)} .kpi.no .v{color:var(--no)}
+
+/* Tablero y tarjetas: bordes suaves + sombras */
+.board{padding:2px 4px 26px;gap:24px}
+.col{border-radius:var(--r-md);border:1px solid rgba(223,230,240,.95);
+  box-shadow:var(--sh-med);overflow:hidden;transition:transform .25s ease, box-shadow .25s ease}
+.col:hover{transform:translateY(-4px);box-shadow:var(--sh-hi)}
+.col-head{border-radius:var(--r-md) var(--r-md) 0 0;padding:18px 20px 16px;
+  background:linear-gradient(180deg,#ffffff,#f8fbff);border-top:4px solid var(--c)}
+.col-head h1{font-size:15px;letter-spacing:.9px}
+.col-head .del,.col-head .sapt{border-radius:11px}
+.col-head .meta{margin-top:10px;gap:8px}
+.col-head .meta span{background:#f3f6fb;border:1px solid #e6ecf5;border-radius:999px;padding:4px 11px;
+  font-size:10.5px;font-weight:700;color:#5c6b80}
+.bulk-no{border-radius:999px;padding:5px 12px;box-shadow:var(--sh-soft)}
+.col-body{padding:14px 16px 18px;gap:11px}
+.item{border-radius:var(--r-sm);padding:13px 15px;border:1px solid #e8eef6;
+  border-left:4px solid color-mix(in srgb,var(--c) 55%,#fff);
+  box-shadow:0 1px 3px rgba(22,40,72,.05);transition:transform .2s ease, box-shadow .2s ease}
+.item:hover{transform:translateY(-2px);box-shadow:var(--sh-soft)}
+.txt{font-size:13.5px;font-weight:700}
+.box{border-radius:8px}
+.desc-k{border-radius:999px;flex:0 0 78px;font-size:9.5px;padding:5px 8px;box-shadow:0 1px 2px rgba(22,40,72,.05)}
+.def{border-radius:10px;font-size:12.5px;line-height:1.55}
+.opts{gap:9px}
+.seg{border-radius:999px;overflow:hidden;box-shadow:0 1px 3px rgba(22,40,72,.06)}
+.seg button{border-radius:0;padding:7px 15px}
+.chip-sap{border-radius:999px;box-shadow:0 1px 3px rgba(22,40,72,.06)}
+.add-item{border-radius:var(--r-sm);border:1.5px dashed #c7d3e3}
+
+@media (max-width:960px){ .intro{grid-template-columns:1fr} }
 @media (max-width:860px){
   body{padding:16px 14px 40px}
   .col{flex:0 0 88vw;width:88vw}
+  .topbar h2{font-size:18px}
 }
-
+@media print{ .intro,.summary{display:none!important} }
 </style></head><body>
 
 
 <div class="topbar">
-  <h2>◆ Checklist de Problemáticas — Makigami</h2>
+  <div class="brand">
+    <span class="brand-mark"><img src="/__l5e/assets-v1/60ad0ee6-7503-4abf-a974-8242f9975223/holding-wiki-logo.png" alt="Holding Wiki"></span>
+    <div>
+    <h2>◆ Avance Makigami — Checklist de Problemáticas</h2>
+    <span class="sub">Tablero para seguir, área por área, qué problemas del proceso ya tienen solución y cuáles siguen pendientes.</span>
+    </div>
+  </div>
   <div class="actions">
-    <span class="filter-wrap"><label>Filtrar:</label><select id="areaFilter" onchange="setFilter(this.value)"><option value="__all__">Todas las áreas</option><option value="0">RECLUTAMIENTO</option><option value="1">ADQUISICIONES</option><option value="2">NUEVA ÁREA</option><option value="3">NUEVA ÁREA</option></select></span>
+    <span class="filter-wrap"><label>Filtrar:</label><select id="areaFilter" onchange="setFilter(this.value)"><option value="__all__">Todas las áreas</option></select></span>
     <button class="btn-add" onclick="addArea()">+ Agregar área</button>
     <button class="btn-allno" onclick="allNoGlobal()">Solución → todo No</button>
     <button class="btn-dl" onclick="descargar()">⬇ HTML</button>
@@ -248,6 +339,27 @@ button:hover{transform:none;filter:brightness(1.06);box-shadow:0 6px 14px -8px r
     <input type="file" id="fileJSON" accept=".json,application/json" style="display:none" onchange="cargarJSON(event)">
   </div>
 </div>
+
+<div class="intro">
+  <div class="card-soft">
+    <h3>🧭 ¿De qué se trata esta página?</h3>
+    <p>Este es el <span class="keyword">seguimiento del trabajo Makigami</span>: un levantamiento de todos los problemas que hoy frenan nuestros procesos, ordenados por <span class="keyword">área</span> (Reclutamiento, Adquisiciones, etc.).</p>
+    <p>Cada tarjeta es <span class="keyword">un problema real</span>, con su descripción y la solución propuesta. A medida que un problema se resuelve, se marca aquí — así el avance queda a la vista sin necesidad de explicarlo.</p>
+  </div>
+  <div class="card-soft">
+    <h3>📖 Cómo leer el tablero</h3>
+    <ul class="steps">
+      <li><span class="n">1</span><span>Cada <b>columna</b> es un área. Arriba, el <b>gráfico circular</b> muestra el % de problemas que ya tienen solución.</span></li>
+      <li><span class="n">2</span><span>En cada tarjeta: <b>Problema</b> (qué pasa) y <b>Solución</b> (qué se hará o se hizo).</span></li>
+      <li><span class="n">3</span><span><b>Sí / No</b> indica si el problema ya tiene solución; <b>⊞ SAP</b> marca los que se resuelven con el nuevo sistema.</span></li>
+      <li><span class="n">4</span><span>La <b>casilla ✓</b> del título significa que el problema ya está cerrado y verificado.</span></li>
+    </ul>
+  </div>
+</div>
+
+<div class="summary" id="summary"></div>
+
+
 
 <div class="board" id="board"><section class="col" style="--c: #22D3C5;">
       <div class="col-head">
@@ -1407,6 +1519,32 @@ function render(){
       </div>`;
     b.appendChild(col);
   });
+  renderResumen();
+}
+
+function renderResumen(){
+  const host=document.getElementById('summary'); if(!host) return;
+  let total=0,conSol=0,sinSol=0,sinDef=0,hechos=0,sap=0;
+  AREAS.forEach(a=>{
+    a.items.forEach(p=>{
+      total++;
+      if(p.hecho) hechos++;
+      if(p.sap) sap++;
+      if(p.solucion==='si'||p.sap) conSol++;
+      else if(p.solucion==='no') sinSol++;
+      else sinDef++;
+    });
+  });
+  const pct = total? Math.round(conSol/total*100):0;
+  host.innerHTML=`
+    <div class="kpi"><div class="k">Áreas analizadas</div><div class="v">${AREAS.length}</div>
+      <div class="h">${total} problemas levantados en total</div></div>
+    <div class="kpi ok"><div class="k">Con solución definida</div><div class="v">${conSol}</div>
+      <div class="h">${pct}% del total</div><div class="track"><i style="width:${pct}%"></i></div></div>
+    <div class="kpi no"><div class="k">Aún sin solución</div><div class="v">${sinSol}</div>
+      <div class="h">${sinDef} todavía por definir</div></div>
+    <div class="kpi"><div class="k">Cerrados y verificados</div><div class="v">${hechos}</div>
+      <div class="h">${sap} se resuelven con SAP</div></div>`;
 }
 
 function rename(i,v){AREAS[i].nombre=v.trim();}
