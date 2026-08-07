@@ -375,7 +375,22 @@ details[open] summary{border-bottom:1px solid rgba(223,230,240,.9);border-radius
 .brand-name{display:none}
 .topbar h2{font-size:22px;line-height:1.25;margin:0}
 
+/* Panel de "problemas detectados vs problemas con solución" en cada módulo */
+.col-score{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0 14px}
+.col-score .sc{background:linear-gradient(180deg,#f8fafd,#ffffff);border:1px solid var(--line);
+  border-radius:12px;padding:12px 10px;text-align:center;box-shadow:0 2px 8px rgba(22,40,72,.05)}
+.col-score .sc .sl{font-size:10px;text-transform:uppercase;letter-spacing:.75px;color:var(--mut);font-weight:800}
+.col-score .sc .sv{font-size:26px;font-weight:900;color:#16273c;line-height:1.1;margin-top:4px}
+.col-score .sc.ok{background:linear-gradient(180deg,#f0fbf6,#ffffff);border-color:#c7ead8}
+.col-score .sc.ok .sv{color:var(--ok)}
+.col-score .bar{grid-column:1 / -1;height:10px;border-radius:999px;background:#e9eef6;overflow:hidden;
+  box-shadow:inset 0 1px 3px rgba(22,40,72,.12)}
+.col-score .bar i{display:block;height:100%;border-radius:999px;
+  background:linear-gradient(90deg,#1f8b86,#22c188);transition:width .45s ease}
+.col-score .bar span{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:9px;font-weight:800;color:#4c5b6e}
+
 @media (max-width:860px){ .intro{grid-template-columns:1fr} .actions{justify-content:flex-start} }
+
 
 </style></head><body>
 
@@ -1562,15 +1577,20 @@ function render(){
     });
     const donut = makeDonut(conSol, sinSol, sinDef, total);
     const sapMeta = a.sap ? `<span>⊞ ${conSap} SAP</span>` : '';
+    const pct = total>0 ? Math.round(conSol/total*100) : 0;
     col.innerHTML=`
       <div class="col-head">
         <div class="t"><span class="dot"></span><h1 contenteditable spellcheck="false" oninput="rename(${ai},this.textContent)">${escapeHtml(a.nombre)}</h1></div>
         <button class="sapt ${a.sap?'on':''}" onclick="toggleAreaSap(${ai})" title="Mostrar/ocultar opción SAP en esta área">SAP</button>
         <button class="del" onclick="rmArea(${ai})" title="Eliminar área">✕</button>
+        <div class="col-score">
+          <div class="sc"><div class="sl">Problemas detectados</div><div class="sv">${total}</div></div>
+          <div class="sc ok"><div class="sl">Con solución</div><div class="sv">${conSol}</div></div>
+          <div class="bar" style="position:relative"><i style="width:${pct}%"></i></div>
+        </div>
         <div class="chart-wrap">
           ${donut}
           <div class="legend">
-            <div class="lg"><span class="sw" style="background:var(--ok)"></span><b>${conSol}</b> con solución</div>
             <div class="lg"><span class="sw" style="background:var(--no)"></span><b>${sinSol}</b> sin solución</div>
             <div class="lg"><span class="sw" style="background:#3a424d"></span><b>${sinDef}</b> sin definir</div>
             <div class="lg"><span class="sw" style="background:var(--c)"></span><b>${hechos}</b> marcados ✓</div>
@@ -1601,9 +1621,9 @@ function renderResumen(){
   });
   const pct = total? Math.round(conSol/total*100):0;
   host.innerHTML=`
-    <div class="kpi"><div class="k">Áreas analizadas</div><div class="v">${AREAS.length}</div>
-      <div class="h">${total} problemas levantados en total</div></div>
-    <div class="kpi ok"><div class="k">Con solución definida</div><div class="v">${conSol}</div>
+    <div class="kpi"><div class="k">Problemas detectados</div><div class="v">${total}</div>
+      <div class="h">en ${AREAS.length} áreas analizadas</div></div>
+    <div class="kpi ok"><div class="k">Problemas con solución</div><div class="v">${conSol}</div>
       <div class="h">${pct}% del total</div><div class="track"><i style="width:${pct}%"></i></div></div>
     <div class="kpi no"><div class="k">Aún sin solución</div><div class="v">${sinSol}</div>
       <div class="h">${sinDef} todavía por definir</div></div>
